@@ -5,11 +5,17 @@ import Footer from "../Footer";
 
 const Layout = () => {
   return (
-    <>
+    <div id="page-container">
       <Navbar />
-      <Outlet />
-      <Footer />
-    </>
+      <div id="content">
+        <div id="content-wrap" className="container d-flex align-items-center">
+          <Outlet />
+        </div>
+      </div>
+      <div id="footer" className="py-3 box-shadow-top">
+        <Footer />
+      </div>
+    </div>
   );
 };
 export default Layout;
