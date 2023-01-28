@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -5,14 +7,23 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import { getUserDataFromLocalStorage } from "./features/auth/authSlice";
+
 import Layout from "./components/layout/Layout";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUserDataFromLocalStorage());
+  }, []);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
@@ -21,6 +32,7 @@ const App = () => {
         <Route path="register" element={<Register />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="change-password" element={<ResetPassword />} />
+        <Route path="dashboard" element={<Dashboard />} />
       </Route>
     )
   );

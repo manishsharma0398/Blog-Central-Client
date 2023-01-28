@@ -1,54 +1,83 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
+import { getAuthDetails, login, reset } from "../../features/auth/authSlice";
 import Input from "../../components/Input";
 
 const Login = () => {
-  const initialLoginData = {
-    email: "",
-    password: "",
-  };
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isError, isSuccess, currentUser, message } =
+    useSelector(getAuthDetails);
 
-  const [loginInputs, setLoginInputs] = useState(initialLoginData);
+  const schema = yup.object().shape({
+    email: yup
+      .string()
+      .email("Enter valid email")
+      .required("Email is required"),
+    password: yup.string().required("Password is required"),
+  });
 
-  const { email, password } = loginInputs;
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: schema,
+    onSubmit: async (values) => {
+      await dispatch(reset());
+      await dispatch(login(values));
+    },
+  });
 
-  const onChange = (e) => {
-    setLoginInputs({
-      ...loginInputs,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-  };
+  useEffect(() => {
+    if (currentUser && isSuccess && !isError) {
+      console.log("cooool");
+      navigate("/dashboard");
+    }
+  }, [isSuccess, isError, currentUser]);
 
   return (
     <div className="w-50 mx-auto h-100 py-5">
-      <form onSubmit={handleFormSubmit} className="card p-5">
+      <form onSubmit={formik.handleSubmit} className="card p-5">
         <h3 className="text-center mb-2">Login</h3>
         <p className="mb-4 text-center">Login to your Blog Central Account</p>
+
+        {message && <div className="error text-center">{message}</div>}
 
         <Input
           id="email"
           label="Email address"
           type="email"
           placeholder="abc@xyz.com"
-          value={email}
-          onChange={onChange}
+          value={formik.values.email}
+          onChange={formik.handleChange("email")}
         />
+
+        {formik.touched.email && formik.errors.email ? (
+          <div className="text-danger">{formik.errors.email}</div>
+        ) : null}
 
         <Input
           id="password"
           label="Password"
           type="password"
           placeholder="Password"
-          value={password}
-          onChange={onChange}
+          value={formik.values.password}
+          onChange={formik.handleChange("password")}
         />
+        {formik.touched.password && formik.errors.password ? (
+          <div className="text-danger">{formik.errors.password}</div>
+        ) : null}
 
-        <div className="small m-0 p-0 mb-3 d-flex justify-content-end">
+        <div
+          className={`small m-0 p-0 d-flex justify-content-end mb-3 ${
+            !formik.errors.password && "mt-2"
+          }`}
+        >
           <Link to="/forgot-password">Forgot Password</Link>
         </div>
 

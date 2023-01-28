@@ -1,13 +1,15 @@
-import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import { selectCurrentUser } from "../features/auth/authSlice";
 
 const Navbar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const currentUser = useSelector(selectCurrentUser);
 
   return (
     <nav id="navbar" className="navbar navbar-expand-md bg-white sticky-top">
       <div className="container navbar-container">
-        <Link to="/" className="navbar-brand fs-4" href="#">
+        <Link to="/" className="navbar-brand fs-4">
           Blog Central
         </Link>
         <button
@@ -21,11 +23,11 @@ const Navbar = () => {
         >
           <span className="navbar-toggler-icon" />
         </button>
-        {!isLoggedIn && (
+        {currentUser && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <NavLink to="/" className="nav-link active" aria-current="page">
+                <NavLink to="/" className="nav-link" aria-current="page">
                   Home
                 </NavLink>
               </li>
@@ -33,7 +35,7 @@ const Navbar = () => {
           </div>
         )}
 
-        {isLoggedIn && (
+        {!currentUser && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">

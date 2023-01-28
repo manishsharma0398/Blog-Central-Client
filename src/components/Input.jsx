@@ -1,6 +1,6 @@
 const Input = ({ id, label, type, helpText, placeholder, value, onChange }) => {
   return (
-    <div className="mb-3">
+    <div className="mb-1 mt-3">
       <label htmlFor={id} className="form-label">
         {label}
       </label>
@@ -11,6 +11,7 @@ const Input = ({ id, label, type, helpText, placeholder, value, onChange }) => {
         name={id}
         value={value}
         onChange={onChange}
+        onBlur={onChange}
         placeholder={placeholder}
         aria-describedby={`${id}-help`}
       />
@@ -22,4 +23,5 @@ const Input = ({ id, label, type, helpText, placeholder, value, onChange }) => {
     </div>
   );
 };
+
 export default Input;
