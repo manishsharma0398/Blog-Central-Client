@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { AiTwotoneHeart } from "react-icons/ai";
 
+import "./footer.scss";
+
 const Footer = () => {
   const year = new Date().getFullYear();
 
@@ -13,11 +15,11 @@ const Footer = () => {
         Developed and Created With <AiTwotoneHeart className="text-danger" /> by{" "}
         <Link to="#">Manish Sharma</Link>
       </p>
-      <div className="text-center d-flex gap-4 justify-content-center">
+      <div className="text-center d-flex gap-4 justify-content-center footer-links">
         <p className="m-0 p-0">Follow me</p>
         <ul
           style={{ listStyle: "none" }}
-          className="d-flex gap-3 justify-content-center m-0 p-0"
+          className="d-flex gap-3 justify-content-center m-0 p-0 footer-social-links"
         >
           <li>
             <Link to="https://www.facebook.com/man.sharma.7921/">Facebook</Link>

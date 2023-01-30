@@ -1,14 +1,14 @@
 import { Outlet } from "react-router-dom";
 
 import Navbar from "../Navbar";
-import Footer from "../Footer";
+import Footer from "../footer/Footer";
 
 const Layout = () => {
   return (
     <div id="page-container">
       <Navbar />
       <div id="content">
-        <div id="content-wrap" className="container d-flex align-items-center">
+        <div id="content-wrap" className="container">
           <Outlet />
         </div>
       </div>

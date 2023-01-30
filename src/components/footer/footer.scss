@@ -1,0 +1,11 @@
+@media only screen and (max-width: 576px) {
+  .footer-links {
+    flex-direction: column !important;
+    gap: 5px !important;
+  }
+
+  .footer-social-links {
+    flex-direction: column !important;
+    gap: 3px !important;
+  }
+}

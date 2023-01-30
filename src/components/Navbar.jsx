@@ -27,9 +27,50 @@ const Navbar = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <NavLink to="/" className="nav-link" aria-current="page">
+                <NavLink to="/" className="nav-link">
                   Home
                 </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/blogs" className="nav-link">
+                  Blogs
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/draft" className="nav-link">
+                  Draft
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/write" className="nav-link">
+                  Write
+                </NavLink>
+              </li>
+              <li className="nav-item dropdown">
+                <Link
+                  className="nav-link dropdown-toggle"
+                  to="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Manish
+                </Link>
+                <ul className="dropdown-menu">
+                  <li>
+                    <Link className="dropdown-item" to="/settings">
+                      Settings
+                    </Link>
+                  </li>
+                  <li>
+                    <hr className="dropdown-divider" />
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="#">
+                      Log out
+                    </Link>
+                  </li>
+                </ul>
               </li>
             </ul>
           </div>

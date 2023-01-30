@@ -16,6 +16,10 @@ import Register from "./pages/auth/Register";
 import ResetPassword from "./pages/auth/ResetPassword";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
+import Write from "./pages/New Blog";
+import Draft from "./pages/Draft";
+import Blogs from "./pages/blogs/Blogs";
+import SingleBlog from "./pages/single/SingleBlog";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -33,6 +37,10 @@ const App = () => {
         <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="change-password" element={<ResetPassword />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="write" element={<Write />} />
+        <Route path="draft" element={<Draft />} />
+        <Route path="blogs" element={<Blogs />} />
+        <Route path="blogs/:blogId" element={<SingleBlog />} />
       </Route>
     )
   );
