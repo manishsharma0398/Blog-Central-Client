@@ -10,13 +10,13 @@ import Login from "./common-pages/auth/Login";
 import Register from "./common-pages/auth/Register";
 import ForgotPassword from "./common-pages/auth/ForgotPassword";
 
-import ResetPassword from "./common-pages/auth/ResetPassword";
+// import ResetPassword from "./common-pages/auth/ResetPassword";
 
-import Dashboard from "./pages/Dashboard";
-import Write from "./pages/New Blog";
-import Draft from "./pages/Draft";
-import Blogs from "./pages/blogs/Blogs";
-import SingleBlog from "./pages/single/SingleBlog";
+// import Dashboard from "./pages/Dashboard";
+// import Write from "./pages/New Blog";
+// import Draft from "./pages/Draft";
+// import Blogs from "./pages/blogs/Blogs";
+// import SingleBlog from "./pages/single/SingleBlog";
 
 import "antd/dist/reset.css";
 

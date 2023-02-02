@@ -50,7 +50,7 @@ export const authSlice = createSlice({
         state.error = null;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.status = "success";
+        state.status = "loggedIn";
         state.error = null;
         state.currentUser = action.payload;
       })
@@ -62,7 +62,9 @@ export const authSlice = createSlice({
   },
 });
 
-export const selectCurrentUser = (state) => state.user.currentUser;
+export const selectCurrentUser = (state) => state.user.currentUser.user;
+export const selectCurrentUserProfile = (state) =>
+  state.user.currentUser.profile;
 export const selectUserStatus = (state) => state.user.status;
 export const selectUserError = (state) => state.user.error;
 export const selectCurrentUserId = (state) => state.user.currentUser.user.id;

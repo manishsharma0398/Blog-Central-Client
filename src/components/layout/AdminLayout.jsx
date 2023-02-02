@@ -1,4 +1,11 @@
+import { useState } from "react";
+import { Layout, Menu } from "antd";
+import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
+import { Outlet, useNavigate } from "react-router-dom";
+
+import { selectCurrentUser } from "../../features/auth/authSlice";
+
 import {
   AiOutlineDashboard,
   AiOutlineBgColors,
@@ -11,20 +18,14 @@ import { BiCategory } from "react-icons/bi";
 import { FaListAlt } from "react-icons/fa";
 import { IoMdNotifications } from "react-icons/io";
 
-import { Layout, Menu } from "antd";
-import { Outlet, useNavigate } from "react-router-dom";
-import { useState } from "react";
-
 const { Header, Sider, Content } = Layout;
 
 import "react-toastify/dist/ReactToastify.css";
-import { useSelector } from "react-redux";
-// import { selectAuthData } from "../../features/auth/authSlice";
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
-  //   const currentUser = useSelector(selectAuthData);
+  const currentUser = useSelector(selectCurrentUser);
 
   const navigate = useNavigate();
 
@@ -169,10 +170,11 @@ const AdminLayout = () => {
                 />
               </div>
               <div className="d-flex flex-column gap-1">
-                {/* <h5 className="m-0 p-0 lh-1 fs-6 d-block">
-                  {currentUser.firstname + " " + currentUser.lastname}
-                </h5> */}
-                {/* <p className="m-0 p-0 lh-1 small">{currentUser.email}</p> */}
+                <h5 className="m-0 p-0 lh-1 fs-6 d-block">
+                  {/* {currentUser.firstname + " " + currentUser.lastname} */}
+                  {currentUser.name}
+                </h5>
+                <p className="m-0 p-0 lh-1 small">{currentUser.email}</p>
               </div>
             </div>
           </div>

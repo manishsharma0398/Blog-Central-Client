@@ -1,14 +1,11 @@
 import { useState, useRef, Fragment } from "react";
 import { Link } from "react-router-dom";
 
-import BlogSuggestion from "../../components/suggestion/BlogSuggestion";
+import BlogSuggestion from "../../components/user-components/suggestion/BlogSuggestion";
 
 import "./singleBlog.scss";
 
 const SingleBlog = () => {
-
-  
-
   return (
     <>
       <div className="row">

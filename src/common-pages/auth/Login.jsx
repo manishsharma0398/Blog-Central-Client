@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
@@ -16,8 +16,11 @@ import Input from "../../components/Input";
 import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
+  const loadingRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const notifyLoading = () => (loadingRef.current = toast.loading("Loging In"));
 
   const currentUser = useSelector(selectCurrentUser);
   const userStatus = useSelector(selectUserStatus);
@@ -40,24 +43,26 @@ const Login = () => {
     onSubmit: async (values) => {
       await dispatch(reset());
       await dispatch(login(values));
+      toast.dismiss(loadingRef.current);
     },
   });
 
   useEffect(() => {
     if (userStatus === "loading") {
-      toast.loading("Loging In");
+      notifyLoading();
     }
     if (userStatus === "rejected") {
       toast.error(`${userError}`);
     }
-    // if ((!userError || userError === null) && currentUser) {
-    //   toast.success("Logged In");
-    //   if (currentUser.role === "admin") {
-    //     return navigate("/admin");
-    //   } else {
-    //     return navigate("/user");
-    //   }
-    // }
+    if (userStatus === "loggedIn") {
+      console.log(currentUser);
+      toast.success("Logged In");
+      if (currentUser.role === "admin") {
+        return navigate("/admin");
+      } else {
+        return navigate("/user");
+      }
+    }
   }, [currentUser, userStatus, userError]);
 
   // useEffect(() => {

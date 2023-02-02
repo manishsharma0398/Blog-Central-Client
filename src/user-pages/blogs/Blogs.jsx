@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserBlog, selectAllUserBlogs } from "../../features/blog/blogSlice";
-import Blog from "../../components/blog/Blog";
+import Blog from "../../components/user-components/blog/Blog";
 import { selectAllUserBlogsStatus } from "../../features/blog/blogSlice";
 
 import "./blogs.scss";
