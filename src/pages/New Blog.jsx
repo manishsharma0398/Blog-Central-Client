@@ -1,4 +1,4 @@
-import { useState, useRef, Fragment } from "react";
+import { useState, useRef, Fragment, useEffect } from "react";
 import { Form, Input as AntInput, Modal, Radio, Space, Upload } from "antd";
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -8,6 +8,13 @@ import "react-quill/dist/quill.snow.css";
 import Input from "../components/Input";
 
 import { PlusOutlined } from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCategories,
+  selectAllCategories,
+  selectCategoryStatus,
+} from "../features/categories/categoriesSlice";
+import { addNewBlog } from "../features/blog/blogSlice";
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -18,7 +25,20 @@ const getBase64 = (file) =>
   });
 
 const Write = () => {
+  const categories = useSelector(selectAllCategories);
+  const categoriesStatus = useSelector(selectCategoryStatus);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (categoriesStatus === "idle") {
+      dispatch(getCategories());
+    }
+    console.log(categories);
+  }, [categoriesStatus]);
+
   const [category, setCategory] = useState("art");
+  // const [categories, setcategories] = useState([]);
   const [visibility, setVisibility] = useState("public");
   const [status, setStatus] = useState("draft");
 
@@ -39,23 +59,23 @@ const Write = () => {
       title: "",
       blog: "",
     },
-    // validationSchema: schema,
+    validationSchema: schema,
     onSubmit: async (values) => {
       const blogData = { ...values, category, visibility, status, fileList };
-      //   await dispatch(reset());
+      await dispatch(addNewBlog(blogData));
       //   await dispatch(login(values));
       console.log(blogData);
     },
   });
 
-  const categories = [
-    { value: "art" },
-    { value: "science" },
-    { value: "technology" },
-    { value: "cinema" },
-    { value: "design" },
-    { value: "food" },
-  ];
+  // const categories = [
+  //   { value: "art" },
+  //   { value: "science" },
+  //   { value: "technology" },
+  //   { value: "cinema" },
+  //   { value: "design" },
+  //   { value: "food" },
+  // ];
 
   const onChangeCategory = (e) => {
     setCategory(e.target.value);
@@ -201,11 +221,10 @@ const Write = () => {
             <Radio.Group onChange={onChangeCategory} value={category}>
               <Space direction="vertical">
                 {categories.map((category) => {
-                  const { value } = category;
                   return (
-                    <Radio value={value}>
-                      {category.value.charAt(0).toUpperCase() +
-                        category.value.slice(1)}
+                    <Radio key={category._id} value={category._id}>
+                      {category.category.charAt(0).toUpperCase() +
+                        category.category.slice(1)}
                     </Radio>
                   );
                 })}

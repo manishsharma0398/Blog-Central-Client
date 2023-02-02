@@ -6,6 +6,9 @@ import BlogSuggestion from "../../components/suggestion/BlogSuggestion";
 import "./singleBlog.scss";
 
 const SingleBlog = () => {
+
+  
+
   return (
     <>
       <div className="row">
