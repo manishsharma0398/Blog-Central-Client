@@ -10,5 +10,12 @@ const login = async (userData) => {
   return response;
 };
 
+const logout = async () => {
+  if (localStorage.getItem("blog_central")) {
+    localStorage.setItem("blog_central", JSON.stringify(""));
+    localStorage.removeItem("blog_central");
+  }
+};
+
 const authService = { login };
 export default authService;

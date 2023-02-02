@@ -1,9 +1,32 @@
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Outlet, useNavigate } from "react-router-dom";
 
-import Navbar from "../Navbar";
-import Footer from "../footer/Footer";
+import {
+  selectCurrentUser,
+  selectUserError,
+  selectUserStatus,
+} from "../../features/auth/authSlice";
+
+import Navbar from "../user-components/Navbar";
+import Footer from "../user-components/footer/Footer";
+import { toast } from "react-toastify";
 
 const Layout = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const currentUser = useSelector(selectCurrentUser);
+  const userStatus = useSelector(selectUserStatus);
+  const userError = useSelector(selectUserError);
+
+  useEffect(() => {
+    if (!currentUser) {
+      toast.error("Please log in to continue");
+      return navigate("/login");
+    }
+  }, [currentUser]);
+
   return (
     <div id="page-container">
       <Navbar />

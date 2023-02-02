@@ -4,14 +4,24 @@ import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
-import { getAuthDetails, login, reset } from "../../features/auth/authSlice";
+import {
+  login,
+  reset,
+  selectCurrentUser,
+  selectUserError,
+  selectUserStatus,
+} from "../../features/auth/authSlice";
+
 import Input from "../../components/Input";
+import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isError, isSuccess, currentUser, message } =
-    useSelector(getAuthDetails);
+
+  const currentUser = useSelector(selectCurrentUser);
+  const userStatus = useSelector(selectUserStatus);
+  const userError = useSelector(selectUserError);
 
   const schema = yup.object().shape({
     email: yup
@@ -34,19 +44,48 @@ const Login = () => {
   });
 
   useEffect(() => {
-    if (currentUser && isSuccess && !isError) {
-      console.log("cooool");
-      navigate("/dashboard");
+    if (userStatus === "loading") {
+      toast.loading("Loging In");
     }
-  }, [isSuccess, isError, currentUser]);
+    if (userStatus === "rejected") {
+      toast.error(`${userError}`);
+    }
+    // if ((!userError || userError === null) && currentUser) {
+    //   toast.success("Logged In");
+    //   if (currentUser.role === "admin") {
+    //     return navigate("/admin");
+    //   } else {
+    //     return navigate("/user");
+    //   }
+    // }
+  }, [currentUser, userStatus, userError]);
+
+  // useEffect(() => {
+  //   if (currentUser && isSuccess && !isError) {
+  //     console.log("cooool");
+  //     navigate("/dashboard");
+  //   }
+  // }, [isSuccess, isError, currentUser]);
 
   return (
     <div className="w-50 mx-auto h-100 py-5">
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <form onSubmit={formik.handleSubmit} className="card p-5">
         <h3 className="text-center mb-2">Login</h3>
         <p className="mb-4 text-center">Login to your Blog Central Account</p>
 
-        {message && <div className="error text-center">{message}</div>}
+        {userError && <div className="error text-center">{userError}</div>}
 
         <Input
           id="email"

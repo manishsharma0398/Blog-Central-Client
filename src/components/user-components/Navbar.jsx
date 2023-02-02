@@ -1,10 +1,23 @@
-import { Link, NavLink } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-import { selectCurrentUser } from "../features/auth/authSlice";
+import {
+  selectCurrentUser,
+  reset,
+  logout,
+} from "../../features/auth/authSlice";
 
 const Navbar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentUser = useSelector(selectCurrentUser);
+
+  const logoutUser = (e) => {
+    e.preventDefault();
+    dispatch(reset());
+    dispatch(logout());
+    return navigate("/login");
+  };
 
   return (
     <nav id="navbar" className="navbar navbar-expand-md bg-white sticky-top">
@@ -27,22 +40,22 @@ const Navbar = () => {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <NavLink to="/" className="nav-link">
+                <NavLink to="/user" className="nav-link">
                   Home
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/blogs" className="nav-link">
+                <NavLink to="/user/blogs" className="nav-link">
                   Blogs
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/draft" className="nav-link">
+                <NavLink to="/user/draft" className="nav-link">
                   Draft
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink to="/write" className="nav-link">
+                <NavLink to="/user/write" className="nav-link">
                   Write
                 </NavLink>
               </li>
@@ -58,7 +71,7 @@ const Navbar = () => {
                 </Link>
                 <ul className="dropdown-menu">
                   <li>
-                    <Link className="dropdown-item" to="/settings">
+                    <Link className="dropdown-item" to="/user/settings">
                       Settings
                     </Link>
                   </li>
@@ -66,7 +79,7 @@ const Navbar = () => {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="#">
+                    <Link onClick={logoutUser} className="dropdown-item" to="#">
                       Log out
                     </Link>
                   </li>
