@@ -42,10 +42,13 @@ const AdminLayout = () => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={[""]}
-          onClick={({ key }) => {
+          onClick={({ key, keyPath }) => {
+            const path = keyPath.reverse().join("/");
+            console.log(path);
+
             if (key == "signout") {
             } else {
-              navigate(key);
+              navigate(`/admin/${path}`);
             }
           }}
           items={[
@@ -77,17 +80,17 @@ const AdminLayout = () => {
               ],
             },
             {
-              key: "category",
+              key: "categories",
               icon: <BsFillCartFill className="fs-4" />,
               label: "Category",
               children: [
                 {
-                  key: "add-category",
+                  key: "add",
                   icon: <BiCategory className="fs-4" />,
-                  label: "Category",
+                  label: "Add Category",
                 },
                 {
-                  key: "category-list",
+                  key: "all",
                   icon: <BiCategory className="fs-4" />,
                   label: "Category List",
                 },
@@ -188,7 +191,7 @@ const AdminLayout = () => {
         >
           <ToastContainer
             position="top-right"
-            autoClose={5000}
+            autoClose={4000}
             hideProgressBar={false}
             newestOnTop={true}
             closeOnClick

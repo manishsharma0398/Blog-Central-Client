@@ -10,6 +10,8 @@ import ForgotPassword from "./common-pages/auth/ForgotPassword";
 import ResetPassword from "./common-pages/auth/ResetPassword";
 
 import Users from "./admin-pages/Users";
+import AddCategory from "./admin-pages/category/AddCategory";
+import CategoryList from "./admin-pages/category/CategoryList";
 
 import Dashboard from "./user-pages/Dashboard";
 import Write from "./user-pages/New Blog";
@@ -31,6 +33,13 @@ const App = () => {
           <Route path="user" element={<Layout />}></Route>
           <Route path="admin" element={<AdminLayout />}>
             <Route path="users" element={<Users />} />
+
+            <Route path="categories/add" element={<AddCategory />} />
+            <Route
+              path="categories/edit/:categoryId"
+              element={<AddCategory />}
+            />
+            <Route path="categories/all" element={<CategoryList />} />
           </Route>
         </Route>
       </Routes>

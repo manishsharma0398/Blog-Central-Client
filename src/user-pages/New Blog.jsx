@@ -10,11 +10,13 @@ import Input from "../components/Input";
 import { PlusOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getCategories,
-  selectAllCategories,
-  selectCategoryStatus,
+  getAllCategories,
+  selectCategoriesData,
+  selectCategoriesStatus,
+  selectCategoriesError,
 } from "../features/categories/categoriesSlice";
 import { addNewBlog } from "../features/blog/blogSlice";
+import CustomInput from "../components/common-components/CustomInput";
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -25,14 +27,14 @@ const getBase64 = (file) =>
   });
 
 const Write = () => {
-  const categories = useSelector(selectAllCategories);
-  const categoriesStatus = useSelector(selectCategoryStatus);
+  const categories = useSelector(selectCategoriesData);
+  const categoriesStatus = useSelector(selectCategoriesStatus);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (categoriesStatus === "idle") {
-      dispatch(getCategories());
+      dispatch(getAllCategories());
     }
     console.log(categories);
   }, [categoriesStatus]);
@@ -128,7 +130,7 @@ const Write = () => {
             Post Blog
           </button>
 
-          <Input
+          <CustomInput
             id="title"
             label="Title"
             placeholder="Blog Title"
