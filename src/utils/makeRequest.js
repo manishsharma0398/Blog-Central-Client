@@ -1,8 +1,15 @@
 import axios from "axios";
-import { base_url } from "./base_url";
+import { access_token } from "./token";
 
-const instance = axios.create({
+export const base_url = "http://localhost:5001/api";
+
+export const makeRequest = axios.create({
   baseURL: base_url,
 });
 
-export default instance;
+export const axiosHeader = {
+  headers: {
+    Authorization: `Bearer ${access_token()}`,
+    Accept: "application/json",
+  },
+};

@@ -12,10 +12,9 @@ export const addNewBlog = createAsyncThunk(
   async (newBlogData, thunkAPI) => {
     try {
       const response = await blogServices.writeNewBlog(newBlogData);
-      console.log(response);
-      return { ...response.data };
+      return response.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response);
+      return thunkAPI.rejectWithValue(err.response.data);
     }
   }
 );

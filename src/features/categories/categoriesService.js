@@ -1,4 +1,4 @@
-import makeRequest from "../../utils/makeRequest";
+import { makeRequest } from "../../utils/makeRequest";
 
 const getAllCategories = async () => {
   const response = await makeRequest.get("/category/all");

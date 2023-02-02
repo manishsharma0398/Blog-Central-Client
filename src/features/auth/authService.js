@@ -1,4 +1,4 @@
-import makeRequest from "../../utils/makeRequest";
+import { makeRequest } from "../../utils/makeRequest";
 
 const login = async (userData) => {
   const response = await makeRequest.post("/auth/login", userData);

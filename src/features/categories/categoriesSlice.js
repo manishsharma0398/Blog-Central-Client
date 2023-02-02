@@ -12,10 +12,10 @@ export const getCategories = createAsyncThunk(
   async (thunkAPI) => {
     try {
       const response = await categoriesService.getAllCategories();
-      console.log(response);
-      return { ...response.data };
+      // console.log(response);
+      return response.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response);
+      return thunkAPI.rejectWithValue(err.response.data);
     }
   }
 );
