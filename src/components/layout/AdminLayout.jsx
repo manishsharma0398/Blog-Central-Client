@@ -43,12 +43,14 @@ const AdminLayout = () => {
           mode="inline"
           defaultSelectedKeys={[""]}
           onClick={({ key, keyPath }) => {
-            const path = keyPath.reverse().join("/");
-            console.log(path);
+            // const path = keyPath.reverse().join("/");
+            // console.log(path);
+            console.log(key);
 
             if (key == "signout") {
             } else {
-              navigate(`/admin/${path}`);
+              // navigate(`/admin/${path}`);
+              navigate(key);
             }
           }}
           items={[
@@ -63,19 +65,19 @@ const AdminLayout = () => {
               label: "Users",
             },
             {
-              key: "coupon",
+              key: "blogs",
               icon: <BsFillCartFill className="fs-4" />,
-              label: "Coupons",
+              label: "Blogs",
               children: [
                 {
-                  key: "add-coupon",
-                  icon: <BsFillCartPlusFill className="fs-4" />,
-                  label: "Add a coupon",
+                  key: "blogs/all",
+                  icon: <BiCategory className="fs-4" />,
+                  label: "All",
                 },
                 {
-                  key: "coupon-list",
-                  icon: <BsFillCartPlusFill className="fs-4" />,
-                  label: "Coupon List",
+                  key: "blogs/user",
+                  icon: <BiCategory className="fs-4" />,
+                  label: "By Users",
                 },
               ],
             },
@@ -85,55 +87,16 @@ const AdminLayout = () => {
               label: "Category",
               children: [
                 {
-                  key: "add",
+                  key: "categories/add",
                   icon: <BiCategory className="fs-4" />,
                   label: "Add Category",
                 },
                 {
-                  key: "all",
+                  key: "categories/all",
                   icon: <BiCategory className="fs-4" />,
                   label: "Category List",
                 },
               ],
-            },
-            {
-              key: "colors",
-              icon: <BsFillCartFill className="fs-4" />,
-              label: "Colours",
-              children: [
-                {
-                  key: "add-colour",
-                  icon: <AiOutlineBgColors className="fs-4" />,
-                  label: "Colour",
-                },
-                {
-                  key: "colour-list",
-                  icon: <AiOutlineBgColors className="fs-4" />,
-                  label: "Colour List",
-                },
-              ],
-            },
-            {
-              key: "product",
-              icon: <BsFillCartFill className="fs-4" />,
-              label: "Catalog",
-              children: [
-                {
-                  key: "add-product",
-                  icon: <BsFillCartPlusFill className="fs-4" />,
-                  label: "Add a Product",
-                },
-                {
-                  key: "product-list",
-                  icon: <BsFillCartPlusFill className="fs-4" />,
-                  label: "Product List",
-                },
-              ],
-            },
-            {
-              key: "orders",
-              icon: <FaListAlt className="fs-4" />,
-              label: "Orders",
             },
             {
               key: "enquiry",

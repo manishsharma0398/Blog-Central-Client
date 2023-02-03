@@ -19,18 +19,38 @@ export const addNewBlog = createAsyncThunk(
   }
 );
 
-export const getUserBlog = createAsyncThunk(
-  "blog/getByUserId",
-  async (userId, thunkAPI) => {
+export const getUserBlogs = createAsyncThunk(
+  "blog/getUserBlogs",
+  async (thunkAPI) => {
     try {
-      const response = await blogServices.getUserBlogs(userId);
-      console.log(response);
-      return { ...response.data };
+      const response = await blogServices.getUserBlogs();
+      return response.data;
     } catch (err) {
-      return thunkAPI.rejectWithValue(err.response);
+      return thunkAPI.rejectWithValue(err.response.data);
     }
   }
 );
+
+export const getBlogsByUserId = createAsyncThunk(
+  "blog/getByUserId",
+  async (userId, thunkAPI) => {
+    try {
+      const response = await blogServices.getUserBlogsByUserId(userId);
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getAllBlogs = createAsyncThunk("blog/all", async (thunkAPI) => {
+  try {
+    const response = await blogServices.getAllBlogs();
+    return response.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response.data);
+  }
+});
 
 export const blogSlice = createSlice({
   name: "blog",
@@ -44,40 +64,63 @@ export const blogSlice = createSlice({
         state.error = null;
       })
       .addCase(addNewBlog.fulfilled, (state, action) => {
-        state.status = "success";
+        state.status = "added";
         console.log(action.payload);
         state.blogs.push(action.payload.data);
         state.error = null;
       })
       .addCase(addNewBlog.rejected, (state, action) => {
-        console.log(action.payload);
         state.status = "error";
         state.blogs = [];
-        console.log(action.payload);
-        // state.error = null
+        state.error = action.payload.message;
       })
-      .addCase(getUserBlog.pending, (state) => {
+      .addCase(getUserBlogs.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(getUserBlog.fulfilled, (state, action) => {
+      .addCase(getUserBlogs.fulfilled, (state, action) => {
         state.status = "success";
-        console.log(action.payload);
         state.blogs = action.payload.blogs;
         state.error = null;
       })
-      .addCase(getUserBlog.rejected, (state, action) => {
-        console.log(action.payload);
+      .addCase(getUserBlogs.rejected, (state, action) => {
         state.status = "error";
-        // state.blogs = [];
-        console.log(action.payload);
-        // state.error = null
+        state.error = action.payload.message;
+        state.blogs = [];
+      })
+      .addCase(getBlogsByUserId.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getBlogsByUserId.fulfilled, (state, action) => {
+        state.status = "success";
+        state.blogs = action.payload.blogs;
+        state.error = null;
+      })
+      .addCase(getBlogsByUserId.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.payload.message;
+        state.blogs = [];
+      })
+      .addCase(getAllBlogs.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(getAllBlogs.fulfilled, (state, action) => {
+        state.status = "success";
+        state.blogs = action.payload;
+        state.error = null;
+      })
+      .addCase(getAllBlogs.rejected, (state, action) => {
+        state.status = "error";
+        state.error = action.payload.message;
+        state.blogs = [];
       });
   },
 });
 
-export const selectAllUserBlogsStatus = (state) => state.blogs.status;
-
-export const selectAllUserBlogs = (state) => state.blogs.blogs;
+export const selectBlogsStatus = (state) => state.blogs.status;
+export const selectBlogsData = (state) => state.blogs.blogs;
+export const selectBlogsError = (state) => state.blogs.error;
 
 export default blogSlice.reducer;

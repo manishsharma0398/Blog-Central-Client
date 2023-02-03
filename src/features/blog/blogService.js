@@ -5,10 +5,26 @@ const writeNewBlog = async (blogData) => {
   return response;
 };
 
-const getUserBlogs = async (userId) => {
+const getUserBlogs = async () => {
+  const response = await makeRequest.get(`/blog/user`, axiosHeader);
+  return response;
+};
+
+const getUserBlogsByUserId = async (userId) => {
   const response = await makeRequest.get(`/blog/user/${userId}`, axiosHeader);
   return response;
 };
 
-const blogServices = { writeNewBlog, getUserBlogs };
+const getAllBlogs = async () => {
+  const response = await makeRequest.get(`/blog/all`, axiosHeader);
+  return response;
+};
+
+const blogServices = {
+  writeNewBlog,
+  getUserBlogs,
+  getAllBlogs,
+  getUserBlogsByUserId,
+};
+
 export default blogServices;

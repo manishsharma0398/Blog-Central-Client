@@ -12,6 +12,8 @@ import ResetPassword from "./common-pages/auth/ResetPassword";
 import Users from "./admin-pages/Users";
 import AddCategory from "./admin-pages/category/AddCategory";
 import CategoryList from "./admin-pages/category/CategoryList";
+import AllBlogs from "./admin-pages/blogs/AllBlogs";
+import BlogsByUser from "./admin-pages/blogs/BlogsByUser";
 
 import Dashboard from "./user-pages/Dashboard";
 import Write from "./user-pages/New Blog";
@@ -40,6 +42,11 @@ const App = () => {
               element={<AddCategory />}
             />
             <Route path="categories/all" element={<CategoryList />} />
+
+            <Route path="blogs">
+              <Route path="all" element={<AllBlogs />} />
+              <Route path="user" element={<BlogsByUser />} />
+            </Route>
           </Route>
         </Route>
       </Routes>

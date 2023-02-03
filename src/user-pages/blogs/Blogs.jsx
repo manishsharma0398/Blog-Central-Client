@@ -1,22 +1,27 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserBlog, selectAllUserBlogs } from "../../features/blog/blogSlice";
-import Blog from "../../components/user-components/blog/Blog";
-import { selectAllUserBlogsStatus } from "../../features/blog/blogSlice";
 
-import "./blogs.scss";
+import {
+  getUserBlogs,
+  selectBlogsData,
+  selectBlogsStatus,
+} from "../../features/blog/blogSlice";
 import { selectCurrentUserId } from "../../features/auth/authSlice";
 
+import Blog from "../../components/user-components/blog/Blog";
+
+import "./blogs.scss";
+
 const Blogs = () => {
-  const allBlogs = useSelector(selectAllUserBlogs);
-  const blogStatus = useSelector(selectAllUserBlogsStatus);
+  const allBlogs = useSelector(selectBlogsData);
+  const blogStatus = useSelector(selectBlogsStatus);
   const userId = useSelector(selectCurrentUserId);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (blogStatus === "idle") {
-      dispatch(getUserBlog(userId));
+      dispatch(getUserBlogs(userId));
     }
   }, [blogStatus]);
 
