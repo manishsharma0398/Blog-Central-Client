@@ -1,24 +1,27 @@
 import { useState } from "react";
 import { Layout, Menu } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import { Outlet, useNavigate } from "react-router-dom";
 
-import { selectCurrentUser } from "../../features/auth/authSlice";
+const { Header, Sider, Content } = Layout;
+
+import {
+  logout,
+  reset,
+  selectCurrentUser,
+} from "../../features/auth/authSlice";
 
 import {
   AiOutlineDashboard,
-  AiOutlineBgColors,
   AiOutlineLeft,
   AiOutlineRight,
 } from "react-icons/ai";
 import { HiOutlineUserGroup } from "react-icons/hi";
-import { BsFillCartPlusFill, BsFillCartFill } from "react-icons/bs";
+import { BsFillCartFill } from "react-icons/bs";
 import { BiCategory } from "react-icons/bi";
 import { FaListAlt } from "react-icons/fa";
 import { IoMdNotifications } from "react-icons/io";
-
-const { Header, Sider, Content } = Layout;
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -28,6 +31,7 @@ const AdminLayout = () => {
   const currentUser = useSelector(selectCurrentUser);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   return (
     <Layout>
@@ -47,7 +51,10 @@ const AdminLayout = () => {
             // console.log(path);
             console.log(key);
 
-            if (key == "signout") {
+            if (key == "logout") {
+              dispatch(reset());
+              dispatch(logout());
+              return navigate("/login");
             } else {
               // navigate(`/admin/${path}`);
               navigate(key);
@@ -102,6 +109,11 @@ const AdminLayout = () => {
               key: "enquiry",
               icon: <FaListAlt className="fs-4" />,
               label: "Enquiry",
+            },
+            {
+              key: "logout",
+              icon: <FaListAlt className="fs-4" />,
+              label: "Logout",
             },
           ]}
         />

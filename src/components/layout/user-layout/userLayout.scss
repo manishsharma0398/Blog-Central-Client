@@ -1,0 +1,11 @@
+#content {
+  min-height: calc(100vh - 182px);
+  display: flex;
+  flex-direction: column;
+}
+
+@media only screen and (max-width: 576px) {
+  #content {
+    min-height: calc(100vh - 315px);
+  }
+}

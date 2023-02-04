@@ -102,3 +102,10 @@ main::-webkit-scrollbar {
 .error {
   color: red;
 }
+
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 150px;
+  margin-top: 50px;
+}

@@ -39,14 +39,14 @@ const Navbar = () => {
         {currentUser && (
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <NavLink to="/user" className="nav-link">
                   Home
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <NavLink to="/user/blogs" className="nav-link">
-                  Blogs
+                  My Blogs
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -56,7 +56,7 @@ const Navbar = () => {
               </li>
               <li className="nav-item">
                 <NavLink to="/user/write" className="nav-link">
-                  Write
+                  Write New Blog
                 </NavLink>
               </li>
               <li className="nav-item dropdown">

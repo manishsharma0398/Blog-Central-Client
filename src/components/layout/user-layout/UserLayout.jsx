@@ -1,18 +1,21 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
 
 import {
   selectCurrentUser,
   selectUserError,
   selectUserStatus,
-} from "../../features/auth/authSlice";
+} from "../../../features/auth/authSlice";
 
-import Navbar from "../user-components/Navbar";
-import Footer from "../user-components/footer/Footer";
-import { toast } from "react-toastify";
+import Navbar from "../../user-components/Navbar";
+import Footer from "../../user-components/footer/Footer";
 
-const Layout = () => {
+import "react-toastify/dist/ReactToastify.css";
+import "./userLayout.scss";
+
+const UserLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -28,17 +31,27 @@ const Layout = () => {
   }, [currentUser]);
 
   return (
-    <div id="page-container">
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={4000}
+        hideProgressBar={false}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Navbar />
-      <div id="content">
-        <div id="content-wrap" className="container">
-          <Outlet />
-        </div>
+      <div id="content" className="container">
+        <Outlet />
       </div>
       <div id="footer" className="py-3 box-shadow-top">
         <Footer />
       </div>
-    </div>
+    </>
   );
 };
-export default Layout;
+export default UserLayout;

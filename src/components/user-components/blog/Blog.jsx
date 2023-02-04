@@ -13,14 +13,14 @@ const Blog = ({ data }) => {
   return (
     <div className="row blog">
       <div className="col-7">
-        <Link className="blog-title" to={`/blogs/${_id}`}>
+        <Link className="blog-title" to={`/user/blogs/${_id}`}>
           {title}
         </Link>
 
         <div>{getText(blog)}</div>
 
         <Link
-          to={`/blogs/${_id}`}
+          to={`/user/blogs/${_id}`}
           className="btn btn-outline-primary read-more"
         >
           Read More
@@ -28,7 +28,7 @@ const Blog = ({ data }) => {
       </div>
       <div className="col-1"></div>
       <div className="col-4 img-container">
-        <img src={img} alt="" />
+        <img src={img} alt={title} />
       </div>
     </div>
   );

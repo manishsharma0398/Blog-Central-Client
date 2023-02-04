@@ -5,12 +5,12 @@ const CustomModal = (props) => {
 
   return (
     <Modal
-      title="Modal"
+      title={title || "Delete Blog"}
       open={open}
       onOk={action}
       onCancel={hideModal}
-      okText="Ok"
-      cancelText="Cancel"
+      okText="Yes"
+      cancelText="No"
     >
       <p>{title}</p>
     </Modal>

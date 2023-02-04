@@ -20,11 +20,33 @@ const getAllBlogs = async () => {
   return response;
 };
 
+const getABlog = async (blogId) => {
+  const response = await makeRequest.get(`/blog/${blogId}`, axiosHeader);
+  return response;
+};
+
+const updateBlog = async ({ values, blogId }) => {
+  const response = await makeRequest.patch(
+    `/blog/${blogId}`,
+    values,
+    axiosHeader
+  );
+  return response;
+};
+
+const deleteBlog = async (blogId) => {
+  const response = await makeRequest.delete(`/blog/${blogId}`, axiosHeader);
+  return response;
+};
+
 const blogServices = {
   writeNewBlog,
   getUserBlogs,
   getAllBlogs,
   getUserBlogsByUserId,
+  getABlog,
+  updateBlog,
+  deleteBlog,
 };
 
 export default blogServices;

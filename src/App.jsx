@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import Layout from "./components/layout/Layout";
+import UserLayout from "./components/layout/user-layout/UserLayout";
 import AdminLayout from "./components/layout/AdminLayout";
 
 import HomePage from "./common-pages/HomePage";
@@ -15,10 +15,10 @@ import CategoryList from "./admin-pages/category/CategoryList";
 import AllBlogs from "./admin-pages/blogs/AllBlogs";
 import BlogsByUser from "./admin-pages/blogs/BlogsByUser";
 
-import Dashboard from "./user-pages/Dashboard";
-import Write from "./user-pages/New Blog";
+import Index from "./user-pages/Index";
+import MyBlogs from "./user-pages/MyBlogs";
 import Draft from "./user-pages/Draft";
-import Blogs from "./user-pages/blogs/Blogs";
+import Write from "./user-pages/New Blog";
 import SingleBlog from "./user-pages/single/SingleBlog";
 
 import "antd/dist/reset.css";
@@ -32,7 +32,16 @@ const App = () => {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
-          <Route path="user" element={<Layout />}></Route>
+
+          <Route path="user" element={<UserLayout />}>
+            <Route index element={<Index />} />
+            <Route path="blogs" element={<MyBlogs />} />
+            <Route path="blogs/:blogId" element={<SingleBlog />} />
+            <Route path="draft" element={<Draft />} />
+            <Route path="write" element={<Write />} />
+            <Route path="write/:blogId" element={<Write />} />
+          </Route>
+
           <Route path="admin" element={<AdminLayout />}>
             <Route path="users" element={<Users />} />
 
