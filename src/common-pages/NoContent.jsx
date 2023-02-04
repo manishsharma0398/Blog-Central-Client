@@ -1,14 +1,22 @@
 import { Button, Result } from "antd";
+import { useNavigate } from "react-router-dom";
 
-const NoContent = ({ title, message, btnText, goToLink }) => {
+const NoContent = () => {
+  const navigate = useNavigate();
+
   return (
     <Result
       status="404"
-      title={title || "404"}
-      subTitle={message || "Sorry, the page you visited does not exist."}
+      title="Page do not exist"
+      subTitle="Sorry, the page you visited does not exist."
       extra={
-        <Button goToLink={goToLink} type="primary">
-          {btnText}
+        <Button
+          onClick={() => {
+            navigate("/");
+          }}
+          type="primary"
+        >
+          Back Home
         </Button>
       }
     />

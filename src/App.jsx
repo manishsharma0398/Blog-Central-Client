@@ -8,6 +8,7 @@ import Login from "./common-pages/auth/Login";
 import Register from "./common-pages/auth/Register";
 import ForgotPassword from "./common-pages/auth/ForgotPassword";
 import ResetPassword from "./common-pages/auth/ResetPassword";
+import NoContent from "./common-pages/NoContent";
 
 import Users from "./admin-pages/Users";
 import AddCategory from "./admin-pages/category/AddCategory";
@@ -58,6 +59,7 @@ const App = () => {
             </Route>
           </Route>
         </Route>
+        <Route path="*" element={<NoContent />} />
       </Routes>
     </BrowserRouter>
   );
