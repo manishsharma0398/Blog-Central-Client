@@ -1,76 +1,81 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
-import ReactQuill from "react-quill";
 import { toast } from "react-toastify";
-import { PlusOutlined } from "@ant-design/icons";
-import { Modal, Radio, Space, Upload } from "antd";
+import { Radio, Space, Button, Image } from "antd";
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
   addNewBlog,
+  updateBlog,
   selectBlogsData,
   selectBlogsError,
   selectBlogsStatus,
-  updateBlog,
+  setBlogStatus,
 } from "../features/blog/blogSlice";
 import {
   getAllCategories,
   selectCategoriesData,
-  selectCategoriesStatus,
   selectCategoriesError,
+  selectCategoriesStatus,
 } from "../features/categories/categoriesSlice";
+import {
+  deleteImage,
+  uploadBlogImages,
+  selectUploadImagesData,
+  selectUploadImagesError,
+  selectUploadImagesStatus,
+  uploadPlaceholderImage,
+} from "../features/upload/uploadSlice";
 
+import Editor from "../components/Editor";
 import CustomInput from "../components/common-components/CustomInput";
 import LoadingPage from "../components/common-components/loading-page/LoadingPage";
 
 import "react-quill/dist/quill.snow.css";
 
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-
 const Write = () => {
-  const [selectedBlog, setSelectedBlog] = useState(null);
+  const [uploadedImagesAddresses, setUploadedImagesAddresses] = useState([]);
+  const [editMode, setEditMode] = useState(null);
 
   const loadingToast = useRef();
-  const blogRef = useRef();
+  const blogRef = useRef(null);
 
   const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const allBlogs = useSelector(selectBlogsData);
-  const categories = useSelector(selectCategoriesData);
-  const blogsStatus = useSelector(selectBlogsStatus);
-  const categoriesStatus = useSelector(selectCategoriesStatus);
   const blogsError = useSelector(selectBlogsError);
+  const blogsStatus = useSelector(selectBlogsStatus);
+  const categories = useSelector(selectCategoriesData);
   const categoriesError = useSelector(selectCategoriesError);
+  const categoriesStatus = useSelector(selectCategoriesStatus);
+  const uploadImagesData = useSelector(selectUploadImagesData);
+  const uploadImagesError = useSelector(selectUploadImagesError);
+  const uploadImagesStatus = useSelector(selectUploadImagesStatus);
 
   const notifyLoading = () =>
     (loadingToast.current = toast.loading(
-      `${selectedBlog ? "Updating" : "Adding"} Blog`
+      `${editMode ? "Updating" : "Adding"} Blog`
     ));
 
   useEffect(() => {
     const blogId = params?.blogId;
     if (blogId) {
       const blog = allBlogs.filter((blog) => blog._id === blogId);
-      setSelectedBlog(blog[0]);
+      setEditMode(blog[0]);
     }
   }, []);
+
+  const newImageAddedToQuill = (data) => {
+    setUploadedImagesAddresses((prevState) => [...prevState, data]);
+  };
 
   useEffect(() => {
     if (categoriesStatus === "idle") {
       dispatch(getAllCategories());
-    }
-    if (blogsStatus === "loading") {
-      notifyLoading();
     }
     if (blogsStatus === "rejected") {
       toast.error(`${blogsError}`);
@@ -78,93 +83,93 @@ const Write = () => {
     }
     if (blogsStatus === "added") {
       toast.success("New Blog added");
-      // http://localhost:5173/user/blogs/63d8387e20c4f30fafbfb4b1
       return navigate(`/user/blogs/${allBlogs[0]._id}`);
     }
     if (blogsStatus === "updated") {
       toast.success("Blog Updated");
-      return navigate(`/user/blogs/${selectedBlog._id}`);
+      return navigate(`/user/blogs/${editMode._id}`);
     }
-  }, [categoriesStatus, blogsStatus]);
-
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-  const [previewTitle, setPreviewTitle] = useState("");
-  const [fileList, setFileList] = useState([]);
+  }, [categoriesStatus, blogsStatus, uploadImagesStatus]);
 
   const schema = yup.object().shape({
-    title: yup.string().required("Title is required"),
     blog: yup.string().required("Blog is required"),
-    category: yup.string().required("Please select a category"),
+    title: yup.string().required("Title is required"),
     visibility: yup.string().required("Please select one"),
-    images: yup.array(),
+    category: yup.string().required("Please select a category"),
+    placeholderImg: yup
+      .string()
+      .required("Please upload one placeholder image"),
   });
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      title: selectedBlog?.title || "",
-      blog: selectedBlog?.blog || "",
-      category: selectedBlog?.category?._id || "",
-      visibility: selectedBlog?.visibility || "",
-      images: selectedBlog?.images || [],
+      blog: editMode?.blog || "",
+      title: editMode?.title || "",
+      visibility: editMode?.visibility || "",
+      category: editMode?.category?._id || "",
+      placeholderImg: editMode?.placeholderImg?.url || "",
     },
     validationSchema: schema,
     onSubmit: async (values) => {
-      if (selectedBlog) {
-        await dispatch(updateBlog({ values, blogId: selectedBlog._id }));
+      dispatch(setBlogStatus("loading"));
+      notifyLoading();
+      const imagesToAdd = await deleteUnwantedImages();
+
+      // check if url or file
+      const re = /(?:\.([^.]+))?$/;
+      const ext = re.exec(values.placeholderImg)[1];
+
+      let res = "";
+      if (!ext) {
+        const url = await dispatch(
+          uploadPlaceholderImage([formik.values.placeholderImg])
+        );
+        res = url?.payload[0];
+      } else {
+        res = editMode.placeholderImg;
       }
-      if (!selectedBlog) {
-        await dispatch(addNewBlog(values));
+      const data = { ...values, placeholderImg: res, images: imagesToAdd };
+
+      if (!editMode) {
+        await dispatch(addNewBlog(data));
+      }
+
+      if (editMode) {
+        await dispatch(updateBlog({ data, blogId: params?.blogId }));
       }
       toast.dismiss(loadingToast.current);
     },
   });
 
-  const handleSaveAsDraft = (e) => {
-    e.preventDefault();
-    console.log(formik.values);
+  const deleteUnwantedImages = async () => {
+    const contents = formik.values.blog;
+    let imagesToAdd = [];
+    uploadedImagesAddresses.forEach(async (imageMetaData) => {
+      if (!contents.includes(imageMetaData.url)) {
+        const { url, asset_id, public_id } = imageMetaData;
+        await dispatch(deleteImage({ public_id }));
+      } else {
+        imagesToAdd.push(imageMetaData);
+      }
+    });
+    return imagesToAdd;
   };
 
-  const handleCancel = () => setPreviewOpen(false);
-  const handlePreview = async (file) => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-    setPreviewImage(file.url || file.preview);
-    setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url.substring(file.url.lastIndexOf("/") + 1)
-    );
-  };
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
-  const uploadButton = (
-    <div>
-      <PlusOutlined />
-      <div
-        style={{
-          marginTop: 8,
-        }}
-      >
-        Upload
-      </div>
-    </div>
-  );
+  const handleSaveAsDraft = () => {};
 
   return blogsStatus === "loading" ? (
     <LoadingPage />
   ) : (
-    <form onSubmit={formik.handleSubmit} className="row">
+    <form onSubmit={formik.handleSubmit} className="row mt-3">
       <div className="col-9">
-        <h3 className="fs-4 py-4 pt-3">
-          {selectedBlog ? "Update Blog" : "Write New Blog"}
-        </h3>
+        {editMode && <h3 className="fs-4 py-4 pt-0"> Update Blog</h3>}
         {/* upload button */}
         <button type="submit" className="btn btn-primary me-5">
-          {selectedBlog ? "Update" : "Add"} Blog
+          {editMode ? "Update" : "Add"} Blog
         </button>
 
-        {/* upload button */}
+        {/* save as draft */}
         <button
           onClick={handleSaveAsDraft}
           type="button"
@@ -196,14 +201,15 @@ const Write = () => {
           >
             Blog
           </label>
-          <ReactQuill
+
+          <Editor
+            newImageAddedToQuill={newImageAddedToQuill}
             id="blogQuill"
-            placeholder="Write Your Blog Contents Here"
-            ref={blogRef}
-            theme="snow"
             value={formik.values.blog}
+            innerRef={blogRef}
+            placeholder="Write Your Blog Contents Here"
             onChange={formik.handleChange("blog")}
-            style={{ height: "400px" }}
+            theme="snow"
           />
 
           {formik.touched.blog && formik.errors.blog ? (
@@ -211,7 +217,63 @@ const Write = () => {
           ) : null}
         </>
       </div>
-      <div className="col-3 d-flex flex-column gap-4 pt-5">
+      <div className="col-3 d-flex flex-column gap-4">
+        {/* upload image */}
+        <div className="card card-body">
+          <h5 className="">Placeholder Image</h5>
+
+          <Button
+            type="primary"
+            onClick={(e) => {
+              document.querySelector("#placeholderImg").click();
+            }}
+          >
+            Upload Image
+          </Button>
+
+          <input
+            type="file"
+            id="placeholderImg"
+            style={{ display: "none" }}
+            onChange={(e) => {
+              formik.setFieldValue("placeholderImg", e.target.files[0]);
+            }}
+          />
+
+          <div className="w-100 d-flex justify-content-center mt-3">
+            {formik.values.placeholderImg && (
+              <>
+                <Image
+                  style={{
+                    maxHeight: "200px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
+                  src={
+                    new RegExp(/^[a-z][a-z0-9+.-]*:/).test(
+                      formik?.values?.placeholderImg
+                    )
+                      ? formik?.values?.placeholderImg
+                      : formik?.values?.placeholderImg === "" ||
+                        !formik?.values?.placeholderImg === null ||
+                        !formik?.values?.placeholderImg ||
+                        formik.values.placeholderImg === undefined
+                      ? ""
+                      : URL.createObjectURL(formik?.values?.placeholderImg)
+                  }
+                />
+              </>
+              // ?fix this
+            )}
+          </div>
+
+          {formik.touched.placeholderImg && formik.errors.placeholderImg ? (
+            <div className="text-danger mt-2">
+              {formik.errors.placeholderImg}
+            </div>
+          ) : null}
+        </div>
+
         {/* status */}
         <div className="card card-body">
           <h5 className="">Visibility</h5>
@@ -228,36 +290,6 @@ const Write = () => {
           {formik.touched.visibility && formik.errors.visibility ? (
             <div className="text-danger mt-2">{formik.errors.visibility}</div>
           ) : null}
-        </div>
-
-        {/* upload image */}
-        <div className="d-flex flex-column justify-content-center align-items-center py-4 card">
-          <p className="text-center">Select Image To upload</p>
-          <div style={{ height: "100px", width: "100px" }}>
-            <Upload
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              listType="picture-card"
-              fileList={fileList}
-              onPreview={handlePreview}
-              onChange={handleChange}
-            >
-              {fileList.length >= 1 ? null : uploadButton}
-            </Upload>
-            <Modal
-              open={previewOpen}
-              title={previewTitle}
-              footer={null}
-              onCancel={handleCancel}
-            >
-              <img
-                alt="example"
-                style={{
-                  width: "100%",
-                }}
-                src={previewImage}
-              />
-            </Modal>
-          </div>
         </div>
 
         {/* select category */}

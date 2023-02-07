@@ -108,4 +108,5 @@ main::-webkit-scrollbar {
   flex-direction: column;
   gap: 150px;
   margin-top: 50px;
+  margin-bottom: 60px;
 }

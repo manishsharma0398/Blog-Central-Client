@@ -92,7 +92,11 @@ export const deleteBlog = createAsyncThunk(
 export const blogSlice = createSlice({
   name: "blog",
   initialState,
-  reducers: {},
+  reducers: {
+    setBlogStatus(state, action) {
+      state.status = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(addNewBlog.pending, (state) => {
@@ -203,5 +207,7 @@ export const blogSlice = createSlice({
 export const selectBlogsStatus = (state) => state.blogs.status;
 export const selectBlogsData = (state) => state.blogs.blogs;
 export const selectBlogsError = (state) => state.blogs.error;
+
+export const { setBlogStatus } = blogSlice.actions;
 
 export default blogSlice.reducer;

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import "./blog.scss";
 
 const Blog = ({ data }) => {
-  const { _id, img, title, blog } = data;
+  const { _id, placeholderImg, title, blog } = data;
 
   const getText = (html) => {
     const doc = new DOMParser().parseFromString(html, "text/html");
@@ -28,7 +28,7 @@ const Blog = ({ data }) => {
       </div>
       <div className="col-1"></div>
       <div className="col-4 img-container">
-        <img src={img} alt={title} />
+        <img src={placeholderImg.url} alt={title} />
       </div>
     </div>
   );

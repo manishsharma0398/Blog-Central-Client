@@ -25,10 +25,10 @@ const getABlog = async (blogId) => {
   return response;
 };
 
-const updateBlog = async ({ values, blogId }) => {
+const updateBlog = async ({ data, blogId }) => {
   const response = await makeRequest.patch(
     `/blog/${blogId}`,
-    values,
+    data,
     axiosHeader
   );
   return response;

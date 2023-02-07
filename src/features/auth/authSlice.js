@@ -62,7 +62,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const selectCurrentUser = (state) => state.user.currentUser.user;
+export const selectCurrentUser = (state) => state.user?.currentUser?.user;
 export const selectCurrentUserProfile = (state) =>
   state.user.currentUser.profile;
 export const selectUserStatus = (state) => state.user.status;

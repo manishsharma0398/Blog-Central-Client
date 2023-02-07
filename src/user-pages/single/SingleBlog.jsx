@@ -100,14 +100,14 @@ const SingleBlog = () => {
           category,
           createdAt,
           updatedAt,
-          images,
+          placeholderImg,
           tags,
           title,
           user,
           _id,
         } = blogs;
-        const { _id: authorId, name } = user || {};
-        console.log(blogs);
+        const { _id: authorId, name, profilePic } = user || {};
+        // console.log(blogs);
         return (
           <div className="row">
             <CustomModal
@@ -117,15 +117,14 @@ const SingleBlog = () => {
               action={handleDeletePost}
             />
             <div className="col-8 single-blog">
-              <div className="img-container py-4 pt-5">
-                <img
-                  src="https://scontent-pnq1-1.xx.fbcdn.net/v/t1.6435-9/140907302_1668200646685019_6032558996023706173_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=krD2KKy1tMgAX_SQ9Rt&_nc_ht=scontent-pnq1-1.xx&oh=00_AfAkM4Q2U33RODBD7uXU1OrsveRDGemmHLRNg9lrkAeFmQ&oe=63FF7649"
-                  alt=""
-                />
+              <div className="img-container pt-5">
+                <img src={placeholderImg.url} alt={title} />
               </div>
 
+              <h1 className="post-title m-0 p-0">{title}</h1>
+
               <div className="author">
-                <img src="" alt="" />
+                <img src={profilePic} alt={name} />
                 <div className="info">
                   <span>{name}</span>
                   <p className="m-0 p-0">
@@ -161,8 +160,6 @@ const SingleBlog = () => {
                   </div>
                 )}
               </div>
-
-              <h1 className="post-title m-0 p-0">{title}</h1>
 
               <div className="post">
                 <ReactQuill theme="bubble" value={blog} readOnly={true} />
