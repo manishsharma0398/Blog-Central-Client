@@ -2,28 +2,29 @@ import * as yup from "yup";
 import moment from "moment";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-import { useRef, useEffect } from "react";
-import { Button, Image, Result, Spin } from "antd";
 import { useNavigate } from "react-router-dom";
+import { Button, Image, Result, Spin } from "antd";
+import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
   updateProfile,
   selectProfileData,
   selectProfileError,
-  selectProfileStatus,
   getUserProfileById,
+  selectProfileStatus,
   deleteProfilePicture,
+  updateProfilePicture,
+  selectProfilePicStatus,
+  selectProfilePicError,
 } from "../../features/user/userSlice";
 import {
-  selectCurrentUser,
   selectUserStatus,
+  selectCurrentUser,
 } from "../../features/auth/authSlice";
-import {
-  uploadProfileImages,
-  selectUploadImagesStatus,
-} from "../../features/upload/uploadSlice";
+import { FALLBACK_PROFILE_PIC } from "../../utils/variables";
 
+import CustomModal from "../../components/common-components/CustomModal";
 import CustomInput from "../../components/common-components/CustomInput";
 import CustomDropdown from "../../components/common-components/CustomDropdown";
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
@@ -32,6 +33,7 @@ import "./updtProfile.scss";
 
 const UpdateProfile = () => {
   const loadingToast = useRef();
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -44,7 +46,9 @@ const UpdateProfile = () => {
   const userStatus = useSelector(selectUserStatus);
   const profileError = useSelector(selectProfileError);
   const profileStatus = useSelector(selectProfileStatus);
-  const uploadProfilePicStatus = useSelector(selectUploadImagesStatus);
+
+  const profilePicStatus = useSelector(selectProfilePicStatus);
+  const profilePicError = useSelector(selectProfilePicError);
 
   useEffect(() => {
     dispatch(getUserProfileById(user?._id));
@@ -96,7 +100,29 @@ const UpdateProfile = () => {
     },
   });
 
-  const deleteProfilePic = async () => {
+  const imageOnChangeHandler = async (e) => {
+    if (e.target.files) {
+      // formik.setFieldValue("profilePic", e.target.files[0]);
+
+      await dispatch(
+        updateProfilePicture({
+          fileToUpload: e.target.files[0],
+          userId: user?._id,
+        })
+      );
+    }
+  };
+
+  const showModal = () => {
+    setOpenDeleteModal(true);
+  };
+  const hideModal = () => {
+    setOpenDeleteModal(false);
+  };
+
+  const handleDelProfilePic = async () => {
+    setOpenDeleteModal(false);
+
     const isUrl = new RegExp(/^[a-z][a-z0-9+.-]*:/).test(
       formik?.values?.profilePic
     );
@@ -106,10 +132,6 @@ const UpdateProfile = () => {
     } else {
       formik.setFieldValue("profilePic", "");
     }
-  };
-
-  const updateProfilePicture = async (fileToUpload) => {
-    await dispatch(uploadProfileImages({ fileToUpload, userId: user?._id }));
   };
 
   const genders = ["male", "female", "transgender"];
@@ -131,176 +153,189 @@ const UpdateProfile = () => {
       }
     />
   ) : (
-    <form onSubmit={formik.handleSubmit} className="profile-form my-5">
-      <h3 className="text-center mb-2">{user?.name?.split(" ")}'s Profile</h3>
+    <>
+      <CustomModal
+        title="Delete your profile pic, Really ?"
+        open={openDeleteModal}
+        hideModal={hideModal}
+        action={handleDelProfilePic}
+      />
+      <form onSubmit={formik.handleSubmit} className="profile-form my-5">
+        <h3 className="text-center mb-2">{user?.name?.split(" ")}'s Profile</h3>
 
-      {profileError && <div className="error text-center">{profileError}</div>}
-
-      <div
-        style={{
-          // height: "350px",
-          width: "350px",
-          maxHeight: "100%",
-          maxWidth: "100%",
-        }}
-        className="d-flex flex-column justify-content-center align-items-center mb-3 mx-auto"
-      >
-        {profileStatus === "deleting" ||
-        uploadProfilePicStatus === "uploading" ? (
-          <Spin />
-        ) : (
-          <Image
-            style={{
-              maxHeight: "340px",
-              objectFit: "cover",
-              width: "100%",
-              maxWidth: "340px",
-              height: "100%",
-              padding: "10px",
-            }}
-            fallback
-            alt={user?.name}
-            title={user?.name}
-            src={
-              new RegExp(/^[a-z][a-z0-9+.-]*:/).test(formik?.values?.profilePic)
-                ? formik?.values?.profilePic
-                : formik?.values?.profilePic === "" ||
-                  !formik?.values?.profilePic === null ||
-                  !formik?.values?.profilePic ||
-                  formik.values.profilePic === undefined
-                ? ""
-                : URL.createObjectURL(formik?.values?.profilePic)
-            }
-          />
+        {profileError && (
+          <div className="error text-center">{profileError}</div>
         )}
-      </div>
-      <div className="d-flex flex-wrap gap-3 justify-content-center">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            document.querySelector("#profilePic").click();
-          }}
-        >
-          Change Profile Picture
-        </button>
 
-        <input
-          type="file"
-          id="profilePic"
-          style={{ display: "none" }}
-          onChange={(e) => {
-            formik.setFieldValue("profilePic", e.target.files[0]);
-            updateProfilePicture(e.target.files[0]);
+        <div
+          style={{
+            // height: "350px",
+            width: "350px",
+            maxHeight: "100%",
+            maxWidth: "100%",
           }}
+          className="d-flex flex-column justify-content-center align-items-center mb-3 mx-auto"
+        >
+          {profilePicStatus === "deleting" ||
+          profilePicStatus === "updating" ? (
+            <Spin />
+          ) : profilePicError === "rejected" ? (
+            <div className="error">Something went wrong</div>
+          ) : (
+            <Image
+              style={{
+                maxHeight: "340px",
+                objectFit: "cover",
+                width: "100%",
+                maxWidth: "340px",
+                height: "100%",
+                padding: "10px",
+              }}
+              fallback={FALLBACK_PROFILE_PIC}
+              alt={user?.name}
+              title={user?.name}
+              src={
+                new RegExp(/^[a-z][a-z0-9+.-]*:/).test(
+                  formik?.values?.profilePic
+                )
+                  ? formik?.values?.profilePic
+                  : formik?.values?.profilePic === "" ||
+                    !formik?.values?.profilePic === null ||
+                    !formik?.values?.profilePic ||
+                    formik.values.profilePic === undefined
+                  ? ""
+                  : URL.createObjectURL(formik?.values?.profilePic)
+              }
+            />
+          )}
+        </div>
+        <div className="d-flex flex-wrap gap-3 justify-content-center">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+              document.querySelector("#profilePic").click();
+            }}
+          >
+            Change Profile Picture
+          </button>
+
+          <input
+            type="file"
+            id="profilePic"
+            style={{ display: "none" }}
+            onChange={imageOnChangeHandler}
+          />
+
+          <button
+            onClick={() => {
+              user?.profilePic?.url ? showModal() : null;
+            }}
+            type="button"
+            className="btn btn-danger"
+          >
+            Delete Profile Picture
+          </button>
+        </div>
+
+        <CustomInput
+          id="mobile"
+          label="Mobile"
+          type="number"
+          placeholder="Mobile Number"
+          value={formik.values.mobile}
+          onChange={formik.handleChange("mobile")}
+          error={formik.errors.mobile}
+          touched={formik.touched.mobile}
+        />
+        <CustomDropdown
+          id="gender"
+          placeholder="Select Gender"
+          value={formik.values.gender}
+          onChange={formik.handleChange("gender")}
+          touched={formik.touched.gender}
+          error={formik.errors.gender}
+          options={genders}
+        />
+        <CustomInput
+          type="date"
+          id="dateOfBirth"
+          label="Date of Birth"
+          value={formik.values.dateOfBirth}
+          onChange={formik.handleChange("dateOfBirth")}
+          error={formik.errors.dateOfBirth}
+          touched={formik.touched.dateOfBirth}
+        />
+        <CustomInput
+          id="country"
+          label="Country"
+          value={formik.values.country}
+          onChange={formik.handleChange("country")}
+          error={formik.errors.country}
+          touched={formik.touched.country}
+        />
+        <CustomInput
+          id="stateOrRegion"
+          label="State/Region"
+          value={formik.values.stateOrRegion}
+          onChange={formik.handleChange("stateOrRegion")}
+          error={formik.errors.stateOrRegion}
+          touched={formik.touched.stateOrRegion}
+        />
+        <CustomInput
+          id="city"
+          label="City"
+          value={formik.values.city}
+          onChange={formik.handleChange("city")}
+          error={formik.errors.city}
+          touched={formik.touched.city}
+        />
+        <CustomInput
+          id="zipCode"
+          label="Pincode/Zipcode"
+          value={formik.values.zipCode}
+          onChange={formik.handleChange("zipCode")}
+          error={formik.errors.zipCode}
+          touched={formik.touched.zipCode}
+        />
+        <CustomInput
+          id="twitter"
+          label="Twitter"
+          value={formik.values.twitter}
+          onChange={formik.handleChange("twitter")}
+          error={formik.errors.twitter}
+          touched={formik.touched.twitter}
+        />
+        <CustomInput
+          id="facebook"
+          label="Facebook"
+          value={formik.values.facebook}
+          onChange={formik.handleChange("facebook")}
+          error={formik.errors.facebook}
+          touched={formik.touched.facebook}
+        />
+        <CustomInput
+          id="linkedin"
+          label="Linkedin"
+          value={formik.values.linkedin}
+          onChange={formik.handleChange("linkedin")}
+          error={formik.errors.linkedin}
+          touched={formik.touched.linkedin}
+        />
+        <CustomInput
+          id="instagram"
+          label="Instagram"
+          value={formik.values.instagram}
+          onChange={formik.handleChange("instagram")}
+          error={formik.errors.instagram}
+          touched={formik.touched.instagram}
         />
 
-        <button
-          onClick={deleteProfilePic}
-          type="button"
-          className="btn btn-danger"
-        >
-          Delete Profile Picture
+        <button type="submit" className="btn btn-primary mt-3 w-100">
+          Update Profile
         </button>
-      </div>
-
-      <CustomInput
-        id="mobile"
-        label="Mobile"
-        type="number"
-        placeholder="Mobile Number"
-        value={formik.values.mobile}
-        onChange={formik.handleChange("mobile")}
-        error={formik.errors.mobile}
-        touched={formik.touched.mobile}
-      />
-      <CustomDropdown
-        id="gender"
-        placeholder="Select Gender"
-        value={formik.values.gender}
-        onChange={formik.handleChange("gender")}
-        touched={formik.touched.gender}
-        error={formik.errors.gender}
-        options={genders}
-      />
-      <CustomInput
-        type="date"
-        id="dateOfBirth"
-        label="Date of Birth"
-        value={formik.values.dateOfBirth}
-        onChange={formik.handleChange("dateOfBirth")}
-        error={formik.errors.dateOfBirth}
-        touched={formik.touched.dateOfBirth}
-      />
-      <CustomInput
-        id="country"
-        label="Country"
-        value={formik.values.country}
-        onChange={formik.handleChange("country")}
-        error={formik.errors.country}
-        touched={formik.touched.country}
-      />
-      <CustomInput
-        id="stateOrRegion"
-        label="State/Region"
-        value={formik.values.stateOrRegion}
-        onChange={formik.handleChange("stateOrRegion")}
-        error={formik.errors.stateOrRegion}
-        touched={formik.touched.stateOrRegion}
-      />
-      <CustomInput
-        id="city"
-        label="City"
-        value={formik.values.city}
-        onChange={formik.handleChange("city")}
-        error={formik.errors.city}
-        touched={formik.touched.city}
-      />
-      <CustomInput
-        id="zipCode"
-        label="Pincode/Zipcode"
-        value={formik.values.zipCode}
-        onChange={formik.handleChange("zipCode")}
-        error={formik.errors.zipCode}
-        touched={formik.touched.zipCode}
-      />
-      <CustomInput
-        id="twitter"
-        label="Twitter"
-        value={formik.values.twitter}
-        onChange={formik.handleChange("twitter")}
-        error={formik.errors.twitter}
-        touched={formik.touched.twitter}
-      />
-      <CustomInput
-        id="facebook"
-        label="Facebook"
-        value={formik.values.facebook}
-        onChange={formik.handleChange("facebook")}
-        error={formik.errors.facebook}
-        touched={formik.touched.facebook}
-      />
-      <CustomInput
-        id="linkedin"
-        label="Linkedin"
-        value={formik.values.linkedin}
-        onChange={formik.handleChange("linkedin")}
-        error={formik.errors.linkedin}
-        touched={formik.touched.linkedin}
-      />
-      <CustomInput
-        id="instagram"
-        label="Instagram"
-        value={formik.values.instagram}
-        onChange={formik.handleChange("instagram")}
-        error={formik.errors.instagram}
-        touched={formik.touched.instagram}
-      />
-
-      <button type="submit" className="btn btn-primary mt-3 w-100">
-        Update Profile
-      </button>
-    </form>
+      </form>
+    </>
   );
 };
 

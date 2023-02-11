@@ -1,4 +1,4 @@
-import { privateRequest } from "../../utils/APIRequest";
+import { privateRequest, publicRequest } from "../../utils/APIRequest";
 
 const updateProfile = async (data) => {
   const response = await privateRequest.patch(`/profile`, data);
@@ -11,7 +11,15 @@ const getAllProfiles = async () => {
 };
 
 const getUserProfile = async (userId) => {
-  const response = await privateRequest.get(`/profile/${userId}`);
+  const response = await publicRequest.get(`/profile/${userId}`);
+  return response;
+};
+
+const updateProfilePicture = async ({ formData, userId }) => {
+  const response = await privateRequest.post(
+    `/user/profile-pic/${userId}`,
+    formData
+  );
   return response;
 };
 
@@ -24,6 +32,7 @@ const userServices = {
   updateProfile,
   getAllProfiles,
   getUserProfile,
+  updateProfilePicture,
   deleteProfilePicture,
 };
 

@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { uploadProfileImages } from "../upload/uploadSlice";
-import { deleteProfilePicture } from "../user/userSlice";
+import {
+  deleteProfilePicture,
+  getUserProfileById,
+  updateProfilePicture,
+} from "../user/userSlice";
 
 import authService from "./authService";
 
@@ -73,11 +76,14 @@ export const authSlice = createSlice({
         state.status = "rejected";
         state.error = action.payload.message;
       })
-      .addCase(uploadProfileImages.fulfilled, (state, action) => {
+      .addCase(getUserProfileById.fulfilled, (state, action) => {
+        state.currentUser.user.profilePic = action.payload.user.profilePic;
+      })
+      .addCase(updateProfilePicture.fulfilled, (state, action) => {
         state.currentUser.user.profilePic = action.payload.profilePic;
       })
       .addCase(deleteProfilePicture.fulfilled, (state, action) => {
-        state.currentUser.user = action.payload;
+        state.currentUser.user.profilePic = action.payload.profilePic;
       });
   },
 });

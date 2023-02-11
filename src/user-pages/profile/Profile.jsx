@@ -1,21 +1,20 @@
 import { useEffect } from "react";
 import moment from "moment/moment";
-import { Button, Image } from "antd";
+import { Button, Image, Result } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { BsFacebook, BsInstagram, BsLinkedin, BsTwitter } from "react-icons/bs";
 
 import {
-  getUserProfileById,
   selectProfileData,
-  selectProfileError,
+  getUserProfileById,
   selectProfileStatus,
+  selectProfilePicError,
+  selectProfilePicStatus,
 } from "../../features/user/userSlice";
-import {
-  selectCurrentUserId,
-  selectCurrentUser,
-} from "../../features/auth/authSlice";
+import { selectCurrentUser } from "../../features/auth/authSlice";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { FALLBACK_PROFILE_PIC } from "../../utils/variables";
 
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
 
@@ -25,16 +24,31 @@ const Profile = () => {
 
   const user = useSelector(selectCurrentUser);
   const profile = useSelector(selectProfileData);
-  const userId = useSelector(selectCurrentUserId);
-  const profileError = useSelector(selectProfileError);
   const profileStatus = useSelector(selectProfileStatus);
 
+  const profilePicStatus = useSelector(selectProfilePicStatus);
+  const profilePicError = useSelector(selectProfilePicError);
+
   useEffect(() => {
-    dispatch(getUserProfileById(userId));
+    dispatch(getUserProfileById(user?._id));
   }, []);
 
   return profileStatus === "loading" ? (
     <LoadingPage />
+  ) : profileStatus === "error" ? (
+    <Result
+      status="500"
+      title="Sorry, something went wrong."
+      extra={
+        <Button
+          onClick={() => {
+            dispatch(getUserProfileById(user?._id));
+          }}
+        >
+          Reload Data
+        </Button>
+      }
+    />
   ) : (
     <div>
       <Button
@@ -45,22 +59,30 @@ const Profile = () => {
         Edit Profile
       </Button>
 
-      <div style={{ height: "200px", maxWidth: "300px" }}>
-        <Image
-          height={200}
-          width="100%"
-          style={{
-            maxHeight: "200px",
-            objectFit: "cover",
-            width: "100%",
-          }}
-          src={user?.profilePic?.url}
-          alt="Manish Sharma"
-        />
+      <div style={{ maxHeight: "300px", maxWidth: "300px" }}>
+        {profilePicStatus === "deleting" || profilePicStatus === "updating" ? (
+          <Spin />
+        ) : profilePicError === "rejected" ? (
+          <div className="error">Something went wrong</div>
+        ) : (
+          <Image
+            width={280}
+            height={280}
+            style={{
+              objectFit: "cover",
+              padding: "10px",
+            }}
+            alt={user?.name}
+            title={user?.name}
+            src={user?.profilePic?.url || FALLBACK_PROFILE_PIC}
+          />
+        )}
       </div>
 
       <p className="mt-3">Mobile : {profile?.mobile}</p>
-      <p>Gender : {capitalizeFirstLetter(profile?.gender)}</p>
+      <p>
+        Gender : {profile?.gender && capitalizeFirstLetter(profile?.gender)}
+      </p>
       <p>DOB: {moment(profile?.dateOfBirth).format("Do MMMM, YYYY")}</p>
       <p>Country : {profile?.country}</p>
       <p>State/Region : {profile?.stateOrRegion}</p>

@@ -1,6 +1,13 @@
-const CustomInput = (props) => {
-  const { type, label, className, id, value, onChange, error, touched } = props;
-
+const CustomInput = ({
+  type,
+  label,
+  className,
+  id,
+  value,
+  onChange,
+  error,
+  touched,
+}) => {
   return (
     <>
       <div className="form-floating mt-3 mb-1">

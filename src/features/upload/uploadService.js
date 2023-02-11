@@ -5,14 +5,6 @@ const uploadBlogImages = async (images) => {
   return response;
 };
 
-const uploadProfileImages = async ({ formData, userId }) => {
-  const response = await privateRequest.post(
-    `/user/profile-pic/${userId}`,
-    formData
-  );
-  return response;
-};
-
 const deleteImages = async (public_id) => {
   const response = await privateRequest.post(`/image`, public_id);
   return response;
@@ -20,7 +12,6 @@ const deleteImages = async (public_id) => {
 
 const uploadService = {
   uploadBlogImages,
-  uploadProfileImages,
   deleteImages,
 };
 

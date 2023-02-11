@@ -3,32 +3,27 @@ import { Link } from "react-router-dom";
 import "./blog.scss";
 
 const Blog = ({ data }) => {
-  const { _id, placeholderImg, title, blog } = data;
-
-  const getText = (html) => {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return doc.body.textContent;
-  };
+  const { _id, placeholderImg, title, description } = data;
 
   return (
     <div className="row blog">
-      <div className="col-7">
+      <div className="col-sm-12 col-md-8 d-flex flex-column gap-3 mb-4">
         <Link className="blog-title" to={`/user/blogs/${_id}`}>
-          {title}
+          <h1>{title}</h1>
         </Link>
 
-        <div>{getText(blog)}</div>
+        <div>{description}</div>
 
         <Link
+          style={{ width: "max-content" }}
           to={`/user/blogs/${_id}`}
           className="btn btn-outline-primary read-more"
         >
           Read More
         </Link>
       </div>
-      <div className="col-1"></div>
-      <div className="col-4 img-container">
-        <img src={placeholderImg.url} alt={title} />
+      <div className="col-sm-12 col-md-4 img-container">
+        <img src={placeholderImg?.url} alt={title} />
       </div>
     </div>
   );

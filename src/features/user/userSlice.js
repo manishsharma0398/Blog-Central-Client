@@ -5,6 +5,10 @@ import profileService from "./userService";
 
 const initialState = {
   profile: [],
+  profilePic: {
+    status: "",
+    error: null,
+  },
   status: "idle",
   error: null,
 };
@@ -41,6 +45,24 @@ export const getUserProfileById = createAsyncThunk(
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const updateProfilePicture = createAsyncThunk(
+  "user/update-profile-picture",
+  async (data, thunkAPI) => {
+    try {
+      const { userId, fileToUpload } = data;
+      const formData = new FormData();
+      formData.append("images", fileToUpload);
+      const response = await userServices.updateProfilePicture({
+        formData,
+        userId,
+      });
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
     }
   }
 );
@@ -99,7 +121,8 @@ export const profileSlice = createSlice({
         state.error = null;
       })
       .addCase(getUserProfileById.fulfilled, (state, action) => {
-        state.profile = action.payload;
+        const { user, ...other } = action.payload;
+        state.profile = other;
         state.error = null;
         state.status = "fetched";
       })
@@ -108,16 +131,29 @@ export const profileSlice = createSlice({
         state.profile = [];
         state.status = "error";
       })
+      .addCase(updateProfilePicture.pending, (state) => {
+        state.profilePic.error = null;
+        state.profilePic.status = "updating";
+      })
+      .addCase(updateProfilePicture.fulfilled, (state) => {
+        state.profilePic.error = null;
+        state.profilePic.status = "updated";
+      })
+      .addCase(updateProfilePicture.rejected, (state, action) => {
+        state.profilePic.error = action.payload.message;
+        state.profilePic.status = "rejected";
+      })
       .addCase(deleteProfilePicture.pending, (state) => {
-        state.status = "deleting";
+        state.profilePic.error = null;
+        state.profilePic.status = "deleting";
       })
       .addCase(deleteProfilePicture.fulfilled, (state, action) => {
-        state.error = null;
-        state.status = "deleted";
+        state.profilePic.error = null;
+        state.profilePic.status = "deleted";
       })
       .addCase(deleteProfilePicture.rejected, (state, action) => {
-        state.error = action.payload.message;
-        state.status = "rejected";
+        state.profilePic.error = action.payload.message;
+        state.profilePic.status = "rejected";
       });
   },
 });
@@ -125,5 +161,7 @@ export const profileSlice = createSlice({
 export const selectProfileError = (state) => state.user.error;
 export const selectProfileData = (state) => state.user.profile;
 export const selectProfileStatus = (state) => state.user.status;
+export const selectProfilePicStatus = (state) => state.user.profilePic.status;
+export const selectProfilePicError = (state) => state.user.profilePic.error;
 
 export default profileSlice.reducer;

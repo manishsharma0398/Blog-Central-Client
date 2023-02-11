@@ -31,8 +31,8 @@ const Editor = ({
   }
 
   async function saveToServer(file) {
-    const res = await dispatch(uploadBlogImages([file]));
-    const data = res?.payload[0];
+    const res = await dispatch(uploadBlogImages(file));
+    const data = res?.payload;
     const url = data.url;
     newImageAddedToQuill(data);
     insertToEditor(url);

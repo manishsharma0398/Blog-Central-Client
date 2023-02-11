@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-import { Radio, Space, Button, Image } from "antd";
+import { Radio, Space, Image } from "antd";
 import { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -30,8 +30,8 @@ import Editor from "../../components/user-components/editor/Editor";
 import CustomInput from "../../components/common-components/CustomInput";
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
 
-import "react-quill/dist/quill.snow.css";
 import "./newBlog.scss";
+import "react-quill/dist/quill.snow.css";
 
 const Write = () => {
   const [uploadedImagesAddresses, setUploadedImagesAddresses] = useState([]);
@@ -90,6 +90,7 @@ const Write = () => {
   const schema = yup.object().shape({
     blog: yup.string().required("Blog is required"),
     title: yup.string().required("Title is required"),
+    description: yup.string().required("Description is required"),
     visibility: yup.string().required("Please select one"),
     category: yup.string().required("Please select a category"),
     placeholderImg: yup
@@ -104,6 +105,7 @@ const Write = () => {
       title: editMode?.title || "",
       visibility: editMode?.visibility || "",
       category: editMode?.category?._id || "",
+      description: editMode?.description || "",
       placeholderImg: editMode?.placeholderImg?.url || "",
     },
     validationSchema: schema,
@@ -119,9 +121,9 @@ const Write = () => {
       let res = "";
       if (!ext) {
         const url = await dispatch(
-          uploadPlaceholderImage([formik.values.placeholderImg])
+          uploadPlaceholderImage(formik.values.placeholderImg)
         );
-        res = url?.payload[0];
+        res = url?.payload;
       } else {
         res = editMode.placeholderImg;
       }
@@ -179,17 +181,27 @@ const Write = () => {
 
         <CustomInput
           id="title"
-          label="Title"
-          placeholder="Blog Title"
           type="text"
+          label="Title"
           className="m-0"
+          placeholder="Blog Title"
           value={formik.values.title}
+          error={formik.errors.title}
+          touched={formik.touched.title}
           onChange={formik.handleChange("title")}
         />
 
-        {formik.touched.title && formik.errors.title ? (
-          <div className="text-danger">{formik.errors.title}</div>
-        ) : null}
+        <div className="form-floating">
+          <textarea
+            className="form-control mt-3"
+            placeholder="Description"
+            id="description"
+            style={{ height: "180px" }}
+            defaultValue={formik.values.description}
+            onChange={formik.handleChange("description")}
+          />
+          <label htmlFor="description">Description</label>
+        </div>
 
         <div id="blogQuill">
           <label

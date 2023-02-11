@@ -9,13 +9,11 @@ const initialState = {
 
 export const uploadBlogImages = createAsyncThunk(
   "upload/blog-image",
-  async (images, thunkAPI) => {
+  async (image, thunkAPI) => {
     try {
       const formData = new FormData();
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i];
-        formData.append("images", image);
-      }
+      formData.append("images", image);
+
       const response = await uploadServices.uploadBlogImages(formData);
       return response.data;
     } catch (error) {
@@ -29,29 +27,8 @@ export const uploadPlaceholderImage = createAsyncThunk(
   async (images, thunkAPI) => {
     try {
       const formData = new FormData();
-      for (let i = 0; i < images.length; i++) {
-        const image = images[i];
-        formData.append("images", image);
-      }
+      formData.append("images", images);
       const response = await uploadServices.uploadBlogImages(formData);
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const uploadProfileImages = createAsyncThunk(
-  "upload/profile-image",
-  async (data, thunkAPI) => {
-    try {
-      const { userId, fileToUpload } = data;
-      const formData = new FormData();
-      formData.append("images", fileToUpload);
-      const response = await uploadServices.uploadProfileImages({
-        formData,
-        userId,
-      });
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
@@ -97,16 +74,6 @@ export const uploadSlice = createSlice({
         state.status = "placeholder image uploaded";
       })
       .addCase(uploadPlaceholderImage.rejected, (state, action) => {
-        state.status = "rejected";
-        state.error = action.payload.message;
-      })
-      .addCase(uploadProfileImages.pending, (state) => {
-        state.status = "uploading";
-      })
-      .addCase(uploadProfileImages.fulfilled, (state) => {
-        state.status = "updated";
-      })
-      .addCase(uploadProfileImages.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload.message;
       })
