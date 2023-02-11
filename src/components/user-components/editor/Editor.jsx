@@ -5,13 +5,14 @@ import ReactQuill, { Quill } from "react-quill";
 import BlotFormatter from "quill-blot-formatter";
 import QuillImageDropAndPaste from "quill-image-drop-and-paste";
 
-import { uploadBlogImages } from "../features/upload/uploadSlice";
+import { uploadBlogImages } from "../../../features/upload/uploadSlice";
 
 Quill.register("modules/blotFormatter", BlotFormatter);
 Quill.register("modules/magicUrl", MagicUrl);
 Quill.register("modules/imageDropAndPaste", QuillImageDropAndPaste);
 
 import "quill/dist/quill.snow.css";
+import "./editor.scss";
 
 const Editor = ({
   id,
@@ -130,7 +131,6 @@ const Editor = ({
       ref={innerRef}
       placeholder={placeholder}
       onChange={onChange}
-      style={{ height: "400px" }}
       theme={theme}
       modules={modules}
     />

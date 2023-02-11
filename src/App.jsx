@@ -19,8 +19,10 @@ import BlogsByUser from "./admin-pages/blogs/BlogsByUser";
 import Index from "./user-pages/Index";
 import MyBlogs from "./user-pages/MyBlogs";
 import Draft from "./user-pages/Draft";
-import Write from "./user-pages/New Blog";
+import Write from "./user-pages/add-blog/New Blog";
 import SingleBlog from "./user-pages/single/SingleBlog";
+import Profile from "./user-pages/profile/Profile";
+import UpdateProfile from "./user-pages/profile/UpdateProfile";
 
 import "antd/dist/reset.css";
 
@@ -36,6 +38,8 @@ const App = () => {
 
           <Route path="user" element={<UserLayout />}>
             <Route index element={<Index />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="profile/update" element={<UpdateProfile />} />
             <Route path="blogs" element={<MyBlogs />} />
             <Route path="blogs/:blogId" element={<SingleBlog />} />
             <Route path="draft" element={<Draft />} />

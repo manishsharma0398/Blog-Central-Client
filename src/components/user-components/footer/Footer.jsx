@@ -2,6 +2,13 @@ import { Link } from "react-router-dom";
 import { AiTwotoneHeart } from "react-icons/ai";
 
 import "./footer.scss";
+import {
+  BsFacebook,
+  BsGithub,
+  BsInstagram,
+  BsLinkedin,
+  BsTwitter,
+} from "react-icons/bs";
 
 const Footer = () => {
   const year = new Date().getFullYear();
@@ -16,27 +23,34 @@ const Footer = () => {
         <Link to="#">Manish Sharma</Link>
       </p>
       <div className="text-center d-flex gap-4 justify-content-center footer-links">
-        <p className="m-0 p-0">Follow me</p>
         <ul
           style={{ listStyle: "none" }}
           className="d-flex gap-3 justify-content-center m-0 p-0 footer-social-links"
         >
           <li>
-            <Link to="https://www.facebook.com/man.sharma.7921/">Facebook</Link>
-          </li>
-          <li>
-            <Link to="https://www.instagram.com/manis_rijal/">Instagram</Link>
-          </li>
-          <li>
-            <Link to="https://twitter.com/WebDevManish">Twitter</Link>
-          </li>
-          <li>
-            <Link to="https://www.linkedin.com/in/manish-sharma0398/">
-              Linkedin
+            <Link to="https://www.facebook.com/man.sharma.7921/">
+              <BsFacebook className="fs-5" color="#4267B2" />
             </Link>
           </li>
           <li>
-            <Link to="https://github.com/manishsharma0398">Github</Link>
+            <Link to="https://www.instagram.com/manis_rijal/">
+              <BsInstagram className="fs-5" color="#C13584" />
+            </Link>
+          </li>
+          <li>
+            <Link to="https://twitter.com/WebDevManish">
+              <BsTwitter className="fs-5" color="#1DA1F2" />
+            </Link>
+          </li>
+          <li>
+            <Link to="https://www.linkedin.com/in/manish-sharma0398/">
+              <BsLinkedin className="fs-5" color="#0e76a8" />
+            </Link>
+          </li>
+          <li>
+            <Link to="https://github.com/manishsharma0398">
+              <BsGithub className="fs-5" color="black" />
+            </Link>
           </li>
         </ul>
       </div>

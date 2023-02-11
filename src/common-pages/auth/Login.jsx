@@ -1,19 +1,20 @@
-import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { useFormik } from "formik";
 import * as yup from "yup";
+import { useFormik } from "formik";
+import { useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   login,
-  reset,
-  selectCurrentUser,
   selectUserError,
   selectUserStatus,
+  selectCurrentUser,
 } from "../../features/auth/authSlice";
 
+import { selectProfileData } from "../../features/user/userSlice";
+
 import Input from "../../components/Input";
-import { toast, ToastContainer } from "react-toastify";
 
 const Login = () => {
   const loadingRef = useRef(null);
@@ -22,9 +23,10 @@ const Login = () => {
 
   const notifyLoading = () => (loadingRef.current = toast.loading("Loging In"));
 
-  const currentUser = useSelector(selectCurrentUser);
-  const userStatus = useSelector(selectUserStatus);
   const userError = useSelector(selectUserError);
+  const userStatus = useSelector(selectUserStatus);
+  const currentUser = useSelector(selectCurrentUser);
+  const profile = useSelector(selectProfileData);
 
   const schema = yup.object().shape({
     email: yup
@@ -41,7 +43,6 @@ const Login = () => {
     },
     validationSchema: schema,
     onSubmit: async (values) => {
-      await dispatch(reset());
       await dispatch(login(values));
       toast.dismiss(loadingRef.current);
     },
@@ -55,22 +56,17 @@ const Login = () => {
       toast.error(`${userError}`);
     }
     if (userStatus === "loggedIn") {
-      console.log(currentUser);
       toast.success("Logged In");
       if (currentUser.role === "admin") {
         return navigate("/admin");
+      }
+      if (!profile || profile === null || profile === undefined) {
+        return navigate("/user/profile/update");
       } else {
         return navigate("/user");
       }
     }
   }, [currentUser, userStatus, userError]);
-
-  // useEffect(() => {
-  //   if (currentUser && isSuccess && !isError) {
-  //     console.log("cooool");
-  //     navigate("/dashboard");
-  //   }
-  // }, [isSuccess, isError, currentUser]);
 
   return (
     <div className="w-50 mx-auto h-100 py-5">

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout, Menu } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
@@ -8,8 +8,8 @@ const { Header, Sider, Content } = Layout;
 
 import {
   logout,
-  reset,
   selectCurrentUser,
+  selectUserStatus,
 } from "../../features/auth/authSlice";
 
 import {
@@ -29,9 +29,16 @@ const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const currentUser = useSelector(selectCurrentUser);
+  const userStatus = useSelector(selectUserStatus);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (userStatus === "idle") {
+      return navigate("/login");
+    }
+  }, [userStatus]);
 
   return (
     <Layout>
@@ -46,15 +53,13 @@ const AdminLayout = () => {
           theme="dark"
           mode="inline"
           defaultSelectedKeys={[""]}
-          onClick={({ key, keyPath }) => {
+          onClick={async ({ key, keyPath }) => {
             // const path = keyPath.reverse().join("/");
             // console.log(path);
             console.log(key);
 
             if (key == "logout") {
-              dispatch(reset());
-              dispatch(logout());
-              return navigate("/login");
+              await dispatch(logout());
             } else {
               // navigate(`/admin/${path}`);
               navigate(key);

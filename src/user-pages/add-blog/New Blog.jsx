@@ -13,27 +13,25 @@ import {
   selectBlogsError,
   selectBlogsStatus,
   setBlogStatus,
-} from "../features/blog/blogSlice";
+} from "../../features/blog/blogSlice";
 import {
   getAllCategories,
   selectCategoriesData,
   selectCategoriesError,
   selectCategoriesStatus,
-} from "../features/categories/categoriesSlice";
+} from "../../features/categories/categoriesSlice";
 import {
   deleteImage,
-  uploadBlogImages,
-  selectUploadImagesData,
-  selectUploadImagesError,
   selectUploadImagesStatus,
   uploadPlaceholderImage,
-} from "../features/upload/uploadSlice";
+} from "../../features/upload/uploadSlice";
 
-import Editor from "../components/Editor";
-import CustomInput from "../components/common-components/CustomInput";
-import LoadingPage from "../components/common-components/loading-page/LoadingPage";
+import Editor from "../../components/user-components/editor/Editor";
+import CustomInput from "../../components/common-components/CustomInput";
+import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
 
 import "react-quill/dist/quill.snow.css";
+import "./newBlog.scss";
 
 const Write = () => {
   const [uploadedImagesAddresses, setUploadedImagesAddresses] = useState([]);
@@ -52,8 +50,6 @@ const Write = () => {
   const categories = useSelector(selectCategoriesData);
   const categoriesError = useSelector(selectCategoriesError);
   const categoriesStatus = useSelector(selectCategoriesStatus);
-  const uploadImagesData = useSelector(selectUploadImagesData);
-  const uploadImagesError = useSelector(selectUploadImagesError);
   const uploadImagesStatus = useSelector(selectUploadImagesStatus);
 
   const notifyLoading = () =>
@@ -161,22 +157,25 @@ const Write = () => {
   return blogsStatus === "loading" ? (
     <LoadingPage />
   ) : (
-    <form onSubmit={formik.handleSubmit} className="row mt-3">
-      <div className="col-9">
+    <form onSubmit={formik.handleSubmit} className="row my-3">
+      <div className="col-md-12 col-lg-9">
         {editMode && <h3 className="fs-4 py-4 pt-0"> Update Blog</h3>}
-        {/* upload button */}
-        <button type="submit" className="btn btn-primary me-5">
-          {editMode ? "Update" : "Add"} Blog
-        </button>
 
-        {/* save as draft */}
-        <button
-          onClick={handleSaveAsDraft}
-          type="button"
-          className="btn btn-warning ms-5"
-        >
-          Save as draft
-        </button>
+        <div className="blog-form-buttons">
+          {/* upload button */}
+          <button type="submit" className="btn btn-primary">
+            {editMode ? "Update" : "Add"} Blog
+          </button>
+
+          {/* save as draft */}
+          <button
+            onClick={handleSaveAsDraft}
+            type="button"
+            className="btn btn-warning"
+          >
+            Save as draft
+          </button>
+        </div>
 
         <CustomInput
           id="title"
@@ -192,7 +191,7 @@ const Write = () => {
           <div className="text-danger">{formik.errors.title}</div>
         ) : null}
 
-        <>
+        <div id="blogQuill">
           <label
             onClick={() => {
               blogRef.current.focus();
@@ -204,7 +203,6 @@ const Write = () => {
 
           <Editor
             newImageAddedToQuill={newImageAddedToQuill}
-            id="blogQuill"
             value={formik.values.blog}
             innerRef={blogRef}
             placeholder="Write Your Blog Contents Here"
@@ -215,85 +213,87 @@ const Write = () => {
           {formik.touched.blog && formik.errors.blog ? (
             <div className="text-danger">{formik.errors.blog}</div>
           ) : null}
-        </>
+        </div>
       </div>
-      <div className="col-3 d-flex flex-column gap-4">
-        {/* upload image */}
-        <div className="card card-body">
-          <h5 className="">Placeholder Image</h5>
+      <div className="col-md-12 col-lg-3 d-flex flex-column gap-4">
+        <div className="visibility-and-placeholder">
+          {/* upload image */}
+          <div className="card p-3">
+            <h5 className="">Placeholder Image</h5>
 
-          <Button
-            type="primary"
-            onClick={(e) => {
-              document.querySelector("#placeholderImg").click();
-            }}
-          >
-            Upload Image
-          </Button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                document.querySelector("#placeholderImg").click();
+              }}
+            >
+              Upload Image
+            </button>
 
-          <input
-            type="file"
-            id="placeholderImg"
-            style={{ display: "none" }}
-            onChange={(e) => {
-              formik.setFieldValue("placeholderImg", e.target.files[0]);
-            }}
-          />
+            <input
+              type="file"
+              id="placeholderImg"
+              style={{ display: "none" }}
+              onChange={(e) => {
+                formik.setFieldValue("placeholderImg", e.target.files[0]);
+              }}
+            />
 
-          <div className="w-100 d-flex justify-content-center mt-3">
-            {formik.values.placeholderImg && (
-              <>
-                <Image
-                  style={{
-                    maxHeight: "200px",
-                    objectFit: "cover",
-                    width: "100%",
-                  }}
-                  src={
-                    new RegExp(/^[a-z][a-z0-9+.-]*:/).test(
-                      formik?.values?.placeholderImg
-                    )
-                      ? formik?.values?.placeholderImg
-                      : formik?.values?.placeholderImg === "" ||
-                        !formik?.values?.placeholderImg === null ||
-                        !formik?.values?.placeholderImg ||
-                        formik.values.placeholderImg === undefined
-                      ? ""
-                      : URL.createObjectURL(formik?.values?.placeholderImg)
-                  }
-                />
-              </>
-              // ?fix this
-            )}
+            <div className="w-100 d-flex justify-content-center mt-3">
+              {formik.values.placeholderImg && (
+                <>
+                  <Image
+                    style={{
+                      maxHeight: "200px",
+                      objectFit: "cover",
+                      width: "100%",
+                    }}
+                    src={
+                      new RegExp(/^[a-z][a-z0-9+.-]*:/).test(
+                        formik?.values?.placeholderImg
+                      )
+                        ? formik?.values?.placeholderImg
+                        : formik?.values?.placeholderImg === "" ||
+                          !formik?.values?.placeholderImg === null ||
+                          !formik?.values?.placeholderImg ||
+                          formik.values.placeholderImg === undefined
+                        ? ""
+                        : URL.createObjectURL(formik?.values?.placeholderImg)
+                    }
+                  />
+                </>
+              )}
+            </div>
+
+            {formik.touched.placeholderImg && formik.errors.placeholderImg ? (
+              <div className="text-danger mt-2">
+                {formik.errors.placeholderImg}
+              </div>
+            ) : null}
           </div>
 
-          {formik.touched.placeholderImg && formik.errors.placeholderImg ? (
-            <div className="text-danger mt-2">
-              {formik.errors.placeholderImg}
-            </div>
-          ) : null}
-        </div>
+          {/* visibility */}
+          <div className="card p-3">
+            <h5 className="">Visibility</h5>
+            <Radio.Group
+              onChange={formik.handleChange("visibility")}
+              value={formik.values.visibility}
+            >
+              <Space direction="vertical">
+                <Radio value="public">Public</Radio>
+                <Radio value="private">Private</Radio>
+              </Space>
+            </Radio.Group>
 
-        {/* status */}
-        <div className="card card-body">
-          <h5 className="">Visibility</h5>
-          <Radio.Group
-            onChange={formik.handleChange("visibility")}
-            value={formik.values.visibility}
-          >
-            <Space direction="vertical">
-              <Radio value="public">Public</Radio>
-              <Radio value="private">Private</Radio>
-            </Space>
-          </Radio.Group>
-
-          {formik.touched.visibility && formik.errors.visibility ? (
-            <div className="text-danger mt-2">{formik.errors.visibility}</div>
-          ) : null}
+            {formik.touched.visibility && formik.errors.visibility ? (
+              <div className="text-danger mt-2">{formik.errors.visibility}</div>
+            ) : null}
+          </div>
         </div>
 
         {/* select category */}
-        <div className="card card-body">
+        <div className="card p-3">
           <h5 className="">Category</h5>
 
           <Radio.Group

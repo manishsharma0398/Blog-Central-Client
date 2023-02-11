@@ -1,25 +1,27 @@
-import { axiosHeader, makeRequest } from "../../utils/makeRequest";
+import { privateRequest, publicRequest } from "../../utils/APIRequest";
 
 const uploadBlogImages = async (images) => {
-  const response = await makeRequest.post(`/image/blogs`, images, axiosHeader);
+  const response = await privateRequest.post(`/image/blogs`, images);
   return response;
 };
 
-const uploadProfileImages = async (images) => {
-  console.log({ images });
-  const response = await makeRequest.post(
-    `/image/profile`,
-    images,
-    axiosHeader
+const uploadProfileImages = async ({ formData, userId }) => {
+  const response = await privateRequest.post(
+    `/user/profile-pic/${userId}`,
+    formData
   );
   return response;
 };
 
 const deleteImages = async (public_id) => {
-  const response = await makeRequest.post(`/image`, public_id, axiosHeader);
+  const response = await privateRequest.post(`/image`, public_id);
   return response;
 };
 
-const uploadService = { uploadBlogImages, uploadProfileImages, deleteImages };
+const uploadService = {
+  uploadBlogImages,
+  uploadProfileImages,
+  deleteImages,
+};
 
 export default uploadService;

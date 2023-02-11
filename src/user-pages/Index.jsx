@@ -6,6 +6,7 @@ import {
   selectBlogsStatus,
   getAllBlogs,
 } from "../features/blog/blogSlice";
+import { selectUserStatus } from "../features/auth/authSlice";
 
 import Blog from "../components/user-components/blog/Blog";
 import ResultPage from "../components/common-components/ResultPage";
@@ -14,15 +15,15 @@ import LoadingPage from "../components/common-components/loading-page/LoadingPag
 const Index = () => {
   const allBlogs = useSelector(selectBlogsData);
   const blogStatus = useSelector(selectBlogsStatus);
+  const userStatus = useSelector(selectUserStatus);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllBlogs());
-  }, []);
-
-  // useEffect(() => {
-  // }, [blogStatus]);
+    if (userStatus === "loggedIn") {
+      dispatch(getAllBlogs());
+    }
+  }, [userStatus]);
 
   return blogStatus === "loading" ? (
     <LoadingPage />

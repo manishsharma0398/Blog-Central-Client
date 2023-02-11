@@ -1,0 +1,43 @@
+.blog-form-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  button {
+    max-width: 300px !important;
+  }
+}
+
+.visibility-and-placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+@media only screen and (max-width: 991px) {
+  .visibility-and-placeholder {
+    flex-direction: row;
+    gap: 25px;
+    div {
+      flex: 1;
+    }
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .visibility-and-placeholder {
+    flex-direction: column;
+  }
+
+  .blog-form-buttons {
+    button {
+      flex: 1;
+    }
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  .blog-form-buttons {
+    flex-direction: column;
+  }
+}

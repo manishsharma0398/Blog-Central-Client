@@ -1,23 +1,30 @@
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 
 import {
-  selectCurrentUser,
-  reset,
   logout,
+  selectUserStatus,
+  selectCurrentUser,
 } from "../../features/auth/authSlice";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const currentUser = useSelector(selectCurrentUser);
 
-  const logoutUser = (e) => {
+  const currentUser = useSelector(selectCurrentUser);
+  const currentUserStatus = useSelector(selectUserStatus);
+
+  const logoutUser = async (e) => {
     e.preventDefault();
-    dispatch(reset());
-    dispatch(logout());
-    return navigate("/login");
+    await dispatch(logout());
   };
+
+  useEffect(() => {
+    if (currentUserStatus === "loggedOut") {
+      return navigate("/login");
+    }
+  }, [currentUserStatus]);
 
   return (
     <nav id="navbar" className="navbar navbar-expand-md bg-white sticky-top">
@@ -38,27 +45,7 @@ const Navbar = () => {
         </button>
         {currentUser && (
           <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav">
-              {/* <li className="nav-item">
-                <NavLink to="/user" className="nav-link">
-                  Home
-                </NavLink>
-              </li> */}
-              <li className="nav-item">
-                <NavLink to="/user/blogs" className="nav-link">
-                  My Blogs
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/user/draft" className="nav-link">
-                  Draft
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink to="/user/write" className="nav-link">
-                  Write New Blog
-                </NavLink>
-              </li>
+            <ul className="navbar-nav ms-auto">
               <li className="nav-item dropdown">
                 <Link
                   className="nav-link dropdown-toggle"
@@ -70,6 +57,11 @@ const Navbar = () => {
                   Manish
                 </Link>
                 <ul className="dropdown-menu">
+                  <li>
+                    <Link className="dropdown-item" to="/user/profile">
+                      Profile
+                    </Link>
+                  </li>
                   <li>
                     <Link className="dropdown-item" to="/user/settings">
                       Settings
@@ -84,6 +76,21 @@ const Navbar = () => {
                     </Link>
                   </li>
                 </ul>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/user/blogs" className="nav-link">
+                  My Blogs
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/user/draft" className="nav-link">
+                  Draft
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink to="/user/write" className="nav-link">
+                  Write New Blog
+                </NavLink>
               </li>
             </ul>
           </div>

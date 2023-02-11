@@ -1,27 +1,22 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 
-import {
-  getUserDataFromLocalStorage,
-  selectCurrentUser,
-} from "../features/auth/authSlice";
+import { selectCurrentUser } from "../features/auth/authSlice";
 
 const HomePage = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const currentUser = useSelector(selectCurrentUser);
 
   useEffect(() => {
-    dispatch(getUserDataFromLocalStorage());
     if (currentUser && currentUser?.role === "admin") {
       return navigate("/admin");
     }
     if (currentUser && currentUser?.role === "user") {
       return navigate("/user");
     }
-  }, []);
+  }, [currentUser]);
 
   return (
     <div className="card text-center mx-auto">

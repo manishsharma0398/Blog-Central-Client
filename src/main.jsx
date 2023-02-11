@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 
 import App from "./App";
 import store from "./app/store.js";
+import { injectStore } from "./utils/APIRequest";
 
 import "./index.css";
 
@@ -12,3 +13,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <App />
   </Provider>
 );
+
+injectStore(store);

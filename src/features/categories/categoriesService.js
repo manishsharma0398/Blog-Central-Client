@@ -1,33 +1,24 @@
-import { axiosHeader, makeRequest } from "../../utils/makeRequest";
+import { privateRequest, publicRequest } from "../../utils/APIRequest";
 
 const getAllCategories = async () => {
-  const response = await makeRequest.get("/category/all");
+  const response = await privateRequest.get("/category/all");
   return response;
 };
 
 const addNewCategory = async (newCategoryData) => {
-  const response = await makeRequest.post(
-    "/category",
-    newCategoryData,
-    axiosHeader
-  );
+  const response = await privateRequest.post("/category", newCategoryData);
   return response;
 };
 
 const updateCategory = async ({ category, categoryId }) => {
-  const response = await makeRequest.patch(
-    `/category/${categoryId}`,
-    { category },
-    axiosHeader
-  );
+  const response = await privateRequest.patch(`/category/${categoryId}`, {
+    category,
+  });
   return response;
 };
 
 const deleteCategory = async (categoryId) => {
-  const response = await makeRequest.delete(
-    `/category/${categoryId}`,
-    axiosHeader
-  );
+  const response = await privateRequest.delete(`/category/${categoryId}`);
   return response;
 };
 

@@ -1,6 +1,6 @@
+import moment from "moment";
 import ReactQuill from "react-quill";
 import { toast } from "react-toastify";
-import { formatDistance } from "date-fns";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -9,29 +9,28 @@ import { AiTwotoneDelete } from "react-icons/ai";
 import { SmileOutlined } from "@ant-design/icons";
 
 import {
-  deleteBlog,
   getABlog,
-  selectBlogsData,
+  deleteBlog,
+  selectBlogData,
   selectBlogsError,
   selectBlogsStatus,
 } from "../../features/blog/blogSlice";
 import { selectCurrentUserId } from "../../features/auth/authSlice";
 
-import BlogSuggestion from "../../components/user-components/suggestion/BlogSuggestion";
+import ResultPage from "../../components/common-components/ResultPage";
 import CustomModal from "../../components/common-components/CustomModal";
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
-import ResultPage from "../../components/common-components/ResultPage";
+import BlogSuggestion from "../../components/user-components/suggestion/BlogSuggestion";
 
 import "./singleBlog.scss";
 
 const SingleBlog = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [deleteBlogId, setDeleteBlogId] = useState(null);
   const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
 
-  const allBlogs = useSelector(selectBlogsData);
+  const singleBlog = useSelector(selectBlogData);
   const blogStatus = useSelector(selectBlogsStatus);
   const blogError = useSelector(selectBlogsError);
   const userId = useSelector(selectCurrentUserId);
@@ -50,17 +49,34 @@ const SingleBlog = () => {
     }
   }, [blogStatus]);
 
-  const showModal = (blogId) => {
+  const showModal = () => {
     setOpenDeleteModal(true);
-    setDeleteBlogId(blogId);
   };
   const hideModal = () => {
     setOpenDeleteModal(false);
   };
 
   const handleDeletePost = () => {
-    dispatch(deleteBlog(deleteBlogId));
+    dispatch(deleteBlog(singleBlog?._id));
     setOpenDeleteModal(false);
+  };
+
+  const {
+    blog,
+    category,
+    createdAt,
+    updatedAt,
+    placeholderImg,
+    tags,
+    title,
+    user,
+    _id,
+  } = singleBlog || {};
+  const { _id: authorId, name, profilePic } = user || {};
+
+  const getText = (html) => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent;
   };
 
   {
@@ -91,89 +107,71 @@ const SingleBlog = () => {
           goToLink="/user"
         />
       )
-    ) : !allBlogs || allBlogs === null ? (
-      <div>No Content</div>
+    ) : !singleBlog || singleBlog === null ? (
+      <ResultPage
+        status="500"
+        title="Sorry, something went wrong."
+        btnText="Back Home"
+        goToLink="/user"
+      />
     ) : (
-      allBlogs?.map((blogs, i) => {
-        const {
-          blog,
-          category,
-          createdAt,
-          updatedAt,
-          placeholderImg,
-          tags,
-          title,
-          user,
-          _id,
-        } = blogs;
-        const { _id: authorId, name, profilePic } = user || {};
-        // console.log(blogs);
-        return (
-          <div className="row">
-            <CustomModal
-              title="Delete this blog, Really ?"
-              open={openDeleteModal}
-              hideModal={hideModal}
-              action={handleDeletePost}
-            />
-            <div className="col-8 single-blog">
-              <div className="img-container pt-5">
-                <img src={placeholderImg.url} alt={title} />
-              </div>
+      <div className="row">
+        <CustomModal
+          title="Delete this blog, Really ?"
+          open={openDeleteModal}
+          hideModal={hideModal}
+          action={handleDeletePost}
+        />
+        <div className="col-sm-12 col-md-8 col-lg-9 single-blog">
+          {/* <div className="img-container pt-5">
+            <img src={placeholderImg?.url} alt={title} />
+          </div> */}
 
-              <h1 className="post-title m-0 p-0">{title}</h1>
+          <h1 className="post-title m-0 p-0">{title}</h1>
 
-              <div className="author">
-                <img src={profilePic} alt={name} />
-                <div className="info">
-                  <span>{name}</span>
-                  <p className="m-0 p-0">
-                    <span className="d-block">
-                      Created{" "}
-                      {formatDistance(new Date(createdAt), new Date(), {
-                        addSuffix: true,
-                      })}
-                    </span>
-                    {createdAt !== updatedAt && (
-                      <span className="d-block">
-                        Updated{" "}
-                        {formatDistance(new Date(updatedAt), new Date(), {
-                          addSuffix: true,
-                        })}
-                      </span>
-                    )}
-                  </p>
-                </div>
-                {userId === authorId && (
-                  <div className="ms-2 edit">
-                    <Link className="btn m-0 p-2" to={`/user/write/${_id}`}>
-                      <GrEdit className="fs-4" />
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => showModal(_id)}
-                      className="btn m-0 p-2"
-                    >
-                      {" "}
-                      <AiTwotoneDelete className="fs-4 text-danger" />
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              <div className="post">
-                <ReactQuill theme="bubble" value={blog} readOnly={true} />
-              </div>
+          <div className="author">
+            <img src={profilePic?.url} alt={name} />
+            <div className="info">
+              <span>{name}</span>
+              <p className="m-0 p-0">
+                <span className="d-block">
+                  {createdAt === updatedAt ? (
+                    <>Created {moment(createdAt).startOf("hour").fromNow()}</>
+                  ) : (
+                    <>Updated {moment(updatedAt).startOf("hour").fromNow()}</>
+                  )}
+                </span>
+              </p>
             </div>
-            {/* <div className="col-1"></div> */}
-            <div className="col-4 d-flex flex-column gap-4 card card-body mt-5">
-              <h3 className="fs-4">Other Posts you may like</h3>
-
-              <BlogSuggestion title="Blog Title" id="1" />
-            </div>
+            {userId === authorId && (
+              <div className="edit">
+                <Link className="btn m-0 p-2" to={`/user/write/${_id}`}>
+                  <GrEdit className="fs-4" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => showModal()}
+                  className="btn m-0 p-2"
+                >
+                  {" "}
+                  <AiTwotoneDelete className="fs-4 text-danger" />
+                </button>
+              </div>
+            )}
           </div>
-        );
-      })[0]
+
+          <div className="post">
+            <ReactQuill theme="bubble" value={blog} readOnly={true} />
+            {/* {getText(blog)} */}
+            {/* <div dangerouslySetInnerHTML={{ __html: blog }}></div> */}
+          </div>
+        </div>
+        <div className="col-sm-12 col-md-4 col-lg-3 d-flex flex-column gap-4 card card-body mt-5">
+          <h3 className="fs-4">Other Posts you may like</h3>
+
+          <BlogSuggestion title="Blog Title" id="1" />
+        </div>
+      </div>
     );
   }
 };

@@ -3,6 +3,7 @@ import blogServices from "./blogService";
 
 const initialState = {
   blogs: [],
+  blog: null,
   status: "idle",
   error: null,
 };
@@ -160,9 +161,10 @@ export const blogSlice = createSlice({
       .addCase(getABlog.pending, (state) => {
         state.status = "loading";
         state.error = null;
+        state.blog = null;
       })
       .addCase(getABlog.fulfilled, (state, action) => {
-        state.blogs = [action.payload];
+        state.blog = action.payload;
         state.error = null;
         state.status = "success";
       })
@@ -170,7 +172,7 @@ export const blogSlice = createSlice({
         console.log(action.payload);
         state.status = "error";
         state.error = action.payload.message;
-        state.blogs = [];
+        state.blog = null;
       })
       .addCase(updateBlog.pending, (state) => {
         state.status = "loading";
@@ -204,9 +206,10 @@ export const blogSlice = createSlice({
   },
 });
 
-export const selectBlogsStatus = (state) => state.blogs.status;
+export const selectBlogData = (state) => state.blogs.blog;
 export const selectBlogsData = (state) => state.blogs.blogs;
 export const selectBlogsError = (state) => state.blogs.error;
+export const selectBlogsStatus = (state) => state.blogs.status;
 
 export const { setBlogStatus } = blogSlice.actions;
 

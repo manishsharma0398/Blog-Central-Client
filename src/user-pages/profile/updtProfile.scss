@@ -1,0 +1,15 @@
+.profile-form {
+  padding: 40px 20px;
+  width: 100%;
+  max-width: 632px;
+  //   background-color: white;
+  background-color: #dddddd;
+  margin: auto;
+  border-radius: 10px;
+}
+
+@media only screen and (max-width: 400px) {
+  .profile-form {
+    padding: 40px 5px;
+  }
+}

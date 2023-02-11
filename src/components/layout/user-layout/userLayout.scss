@@ -4,7 +4,11 @@
   flex-direction: column;
 }
 
-@media only screen and (max-width: 576px) {
+#footer {
+  background-color: #fff;
+}
+
+@media only screen and (max-width: 300px) {
   #content {
     min-height: calc(100vh - 315px);
   }
