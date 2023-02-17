@@ -1,44 +1,116 @@
 .blog {
-  &:nth-child(2n + 1) {
-    flex-direction: row-reverse;
-  }
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 20px;
 
-  div {
-    .blog-title {
-      text-decoration: none;
-      color: inherit;
-      text-transform: uppercase;
-      //   font-size: 48px;
-      font-size: 38px;
-    }
-
-    p {
-      font-size: 18px;
-    }
-
-    .read-more {
-      padding: 10px 20px;
-    }
-  }
-
-  .img-container {
-    position: relative;
-
-    &::after {
-      content: "";
-      width: 100%;
-      height: 100%;
-      background-color: #b9e7e7;
-      position: absolute;
-      top: 20px;
-      left: -10px;
-      z-index: -1;
-    }
-
+  &-placeholder_image {
     img {
-      width: 100%;
-      max-width: 400px;
-      object-fit: cover;
+      max-height: 300px;
+    }
+  }
+
+  &-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: flex-start;
+
+    .blog-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      span {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+      }
+
+      .tags {
+        padding: 4px 15px;
+        margin: 0;
+        height: 32px;
+      }
+    }
+
+    &_title {
+      text-transform: uppercase;
+      font-size: 35px;
+      color: black;
+      line-height: 40px;
+      -webkit-line-clamp: 2;
+    }
+
+    &_author {
+      display: flex;
+      gap: 12px;
+      font-size: 16px;
+
+      a {
+        text-decoration: underline;
+      }
+
+      a,
+      time {
+        color: gray;
+        font-weight: 500;
+      }
+    }
+
+    &_title,
+    &_description {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+    }
+
+    &_description {
+      font-size: 20px;
+      -webkit-line-clamp: 3;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .blog {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgb(175, 174, 174);
+
+    &-placeholder_image {
+      padding: 0px;
+    }
+
+    &-details {
+      gap: 10px;
+      padding: 0;
+
+      &_title {
+        font-size: 30px;
+        line-height: 35px;
+      }
+
+      &_author {
+        gap: 12px;
+        font-size: 14px;
+      }
+
+      &_description {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 400px) {
+  .blog {
+    &-details {
+      &_author {
+        flex-direction: column;
+      }
     }
   }
 }

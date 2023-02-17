@@ -15,13 +15,20 @@ const getUserBlogsByUserId = async (userId) => {
   return response;
 };
 
-const getAllBlogs = async () => {
-  const response = await privateRequest.get(`/blog/all`);
+const getAllBlogs = async (filterData) => {
+  const { userId, page, sort, sortOrder, categories, search } = filterData;
+  const response = await privateRequest.get(
+    `/blog/all?userId=${userId}&page=${page}&sort=${sort || ""},${
+      sortOrder || ""
+    }&categories=${categories ? categories?.toString() : ""}&search=${
+      search || ""
+    }`
+  );
   return response;
 };
 
-const getABlog = async (blogId) => {
-  const response = await privateRequest.get(`/blog/${blogId}`);
+const getABlog = async (blogId, userId) => {
+  const response = await privateRequest.get(`/blog/${blogId}?userId=${userId}`);
   return response;
 };
 
@@ -35,14 +42,20 @@ const deleteBlog = async (blogId) => {
   return response;
 };
 
+const handleLikes = async (blogId) => {
+  const response = await privateRequest.post(`/blog/like/${blogId}`);
+  return response;
+};
+
 const blogServices = {
-  writeNewBlog,
-  getUserBlogs,
-  getAllBlogs,
-  getUserBlogsByUserId,
   getABlog,
   updateBlog,
   deleteBlog,
+  handleLikes,
+  getAllBlogs,
+  getUserBlogs,
+  writeNewBlog,
+  getUserBlogsByUserId,
 };
 
 export default blogServices;

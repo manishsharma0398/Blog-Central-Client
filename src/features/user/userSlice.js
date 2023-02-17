@@ -4,11 +4,26 @@ import userServices from "./userService";
 import profileService from "./userService";
 
 const initialState = {
-  profile: [],
+  allUsers: {
+    users: [],
+    status: "",
+    error: null,
+  },
+  user: {
+    user: {},
+    status: "",
+    error: null,
+  },
   profilePic: {
     status: "",
     error: null,
   },
+  dashboard: {
+    data: [],
+    status: "",
+    error: null,
+  },
+  profile: [],
   status: "idle",
   error: null,
 };
@@ -37,11 +52,36 @@ export const getAllProfiles = createAsyncThunk(
   }
 );
 
+export const getAllUsers = createAsyncThunk(
+  "users/get-all",
+  async (thunkAPI) => {
+    try {
+      const response = await userServices.getAllUsers();
+      return response.data;
+    } catch (err) {
+      console.log(err);
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const getUserProfileById = createAsyncThunk(
   "profile/get-by-id",
   async (userId, thunkAPI) => {
     try {
       const response = await profileService.getUserProfile(userId);
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const getDashboardData = createAsyncThunk(
+  "admin/get-dashboard",
+  async (_, thunkAPI) => {
+    try {
+      const response = await userServices.getDashboardData();
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -116,12 +156,40 @@ export const profileSlice = createSlice({
         state.profile = [];
         state.status = "error";
       })
+      .addCase(getAllUsers.pending, (state) => {
+        state.allUsers.error = null;
+        state.allUsers.status = "loading";
+      })
+      .addCase(getAllUsers.fulfilled, (state, action) => {
+        state.allUsers.users = action.payload;
+        state.allUsers.error = null;
+        state.allUsers.status = "success";
+      })
+      .addCase(getAllUsers.rejected, (state, action) => {
+        state.allUsers.error = action.payload.message;
+        state.allUsers.users = [];
+        state.allUsers.status = "error";
+      })
+      .addCase(getDashboardData.pending, (state) => {
+        state.dashboard.error = null;
+        state.dashboard.status = "loading";
+      })
+      .addCase(getDashboardData.fulfilled, (state, action) => {
+        state.dashboard.data = action.payload;
+        state.dashboard.error = null;
+        state.dashboard.status = "success";
+      })
+      .addCase(getDashboardData.rejected, (state, action) => {
+        state.dashboard.error = action.payload.message;
+        state.dashboard.data = [];
+        state.dashboard.status = "error";
+      })
       .addCase(getUserProfileById.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
       .addCase(getUserProfileById.fulfilled, (state, action) => {
-        const { user, ...other } = action.payload;
+        const { user, ...other } = action.payload || {};
         state.profile = other;
         state.error = null;
         state.status = "fetched";
@@ -163,5 +231,9 @@ export const selectProfileData = (state) => state.user.profile;
 export const selectProfileStatus = (state) => state.user.status;
 export const selectProfilePicStatus = (state) => state.user.profilePic.status;
 export const selectProfilePicError = (state) => state.user.profilePic.error;
+
+export const selectAllUsers = (state) => state.user.allUsers;
+
+export const selectDashboardData = (state) => state.user.dashboard;
 
 export default profileSlice.reducer;

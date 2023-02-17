@@ -1,0 +1,23 @@
+.index {
+  padding: 10px 0;
+  display: flex;
+  gap: 30px;
+
+  .filter-blogs {
+  }
+
+  .blog-posts {
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .index {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .index {
+    flex-direction: column;
+  }
+}

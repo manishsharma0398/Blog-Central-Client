@@ -6,14 +6,16 @@ import { useEffect, useState } from "react";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { SmileOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
   getABlog,
   deleteBlog,
-  selectBlogData,
+  getAllBlogs,
+  selectBlogsData,
   selectBlogsError,
   selectBlogsStatus,
+  selectSingleBlogData,
 } from "../../features/blog/blogSlice";
 import { selectCurrentUserId } from "../../features/auth/authSlice";
 
@@ -28,21 +30,22 @@ const SingleBlog = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const dispatch = useDispatch();
   const params = useParams();
+  const history = useLocation();
   const navigate = useNavigate();
 
-  const singleBlog = useSelector(selectBlogData);
-  const blogStatus = useSelector(selectBlogsStatus);
-  const blogError = useSelector(selectBlogsError);
+  const singleBlog = useSelector(selectSingleBlogData);
   const userId = useSelector(selectCurrentUserId);
+  const blogError = useSelector(selectBlogsError);
+  const blogStatus = useSelector(selectBlogsStatus);
+
+  const allBlogs = useSelector(selectBlogsData);
 
   useEffect(() => {
-    dispatch(getABlog(params.blogId));
-  }, []);
+    dispatch(getABlog(params?.blogId));
+    dispatch(getAllBlogs({ categories: history?.state?.category }));
+  }, [params?.blogId, history?.state?.category]);
 
   useEffect(() => {
-    if (blogStatus === "error") {
-      console.log("Something went wrong");
-    }
     if (blogStatus === "deleted") {
       toast.warn("Blog Deleted");
       return navigate("/user/blogs");
@@ -56,21 +59,21 @@ const SingleBlog = () => {
     setOpenDeleteModal(false);
   };
 
-  const handleDeletePost = () => {
-    dispatch(deleteBlog(singleBlog?._id));
+  const handleDeletePost = async () => {
+    await dispatch(deleteBlog(singleBlog?._id));
     setOpenDeleteModal(false);
   };
 
   const {
+    _id,
+    tags,
+    user,
     blog,
+    title,
     category,
     createdAt,
     updatedAt,
     placeholderImg,
-    tags,
-    title,
-    user,
-    _id,
   } = singleBlog || {};
   const { _id: authorId, name, profilePic } = user || {};
 
@@ -156,11 +159,23 @@ const SingleBlog = () => {
             </div>
           </div>
           <div className="col-sm-12 col-md-4 col-lg-3 d-flex flex-column gap-4">
-            <div className="card card-body">
-              <h3 className="fs-4">Other Posts you may like</h3>
+            {allBlogs.length > 0 && (
+              <>
+                <h3 className="fs-4">Other Posts you may like</h3>
 
-              <BlogSuggestion title="Blog Title" id="1" />
-            </div>
+                {/* <div className="card card-body"> */}
+                {allBlogs.map((blog) => (
+                  <BlogSuggestion
+                    key={blog?._id}
+                    title={blog?.title}
+                    id={blog?._id}
+                    img={blog?.placeholderImg?.url}
+                  />
+                ))}
+
+                {/* </div> */}
+              </>
+            )}
           </div>
         </div>
         <CustomModal

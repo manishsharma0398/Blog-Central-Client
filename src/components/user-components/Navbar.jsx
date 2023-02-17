@@ -7,6 +7,12 @@ import {
   selectUserStatus,
   selectCurrentUser,
 } from "../../features/auth/authSlice";
+import {
+  selectCategoriesData,
+  selectCategoriesError,
+  selectCategoriesStatus,
+} from "../../features/categories/categoriesSlice";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -14,6 +20,10 @@ const Navbar = () => {
 
   const currentUser = useSelector(selectCurrentUser);
   const currentUserStatus = useSelector(selectUserStatus);
+
+  const categories = useSelector(selectCategoriesData);
+  const categoriesStatus = useSelector(selectCategoriesStatus);
+  const categoriesError = useSelector(selectCategoriesError);
 
   const logoutUser = async (e) => {
     e.preventDefault();
@@ -27,11 +37,12 @@ const Navbar = () => {
   }, [currentUserStatus]);
 
   return (
-    <nav id="navbar" className="navbar navbar-expand-md bg-white sticky-top">
+    <nav id="navbar" className="navbar navbar-expand-lg bg-white sticky-top">
       <div className="container navbar-container">
         <Link to="/" className="navbar-brand fs-4">
           Blog Central
         </Link>
+
         <button
           className="navbar-toggler"
           type="button"
@@ -78,6 +89,11 @@ const Navbar = () => {
                 </ul>
               </li>
               <li className="nav-item">
+                {/* {categories.map((cat) => (
+                  <NavLink to="/user/blogs" className="nav-link">
+                    {capitalizeFirstLetter(cat.category)}
+                  </NavLink>
+                ))} */}
                 <NavLink to="/user/blogs" className="nav-link">
                   My Blogs
                 </NavLink>

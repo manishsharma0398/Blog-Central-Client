@@ -29,6 +29,18 @@ export const login = createAsyncThunk(
   }
 );
 
+export const register = createAsyncThunk(
+  "auth/register",
+  async (userData, thunkAPI) => {
+    try {
+      const response = await authService.register(userData);
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const logout = createAsyncThunk("auth/logout", async (thunkAPI) => {
   try {
     const response = await authService.logout();
@@ -63,6 +75,21 @@ export const authSlice = createSlice({
         state.error = action.payload.message;
         state.currentUser = [];
       })
+      .addCase(register.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+        state.currentUser = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.currentUser = null;
+        state.error = null;
+        state.status = "registered";
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload.message;
+        state.currentUser = null;
+      })
       .addCase(logout.pending, (state) => {
         state.status = "loading";
         state.error = null;
@@ -77,7 +104,10 @@ export const authSlice = createSlice({
         state.error = action.payload.message;
       })
       .addCase(getUserProfileById.fulfilled, (state, action) => {
-        state.currentUser.user.profilePic = action.payload.user.profilePic;
+        state.currentUser.user.profilePic =
+          !action.payload || action.payload === null
+            ? {}
+            : action?.payload?.user?.profilePic;
       })
       .addCase(updateProfilePicture.fulfilled, (state, action) => {
         state.currentUser.user.profilePic = action.payload.profilePic;

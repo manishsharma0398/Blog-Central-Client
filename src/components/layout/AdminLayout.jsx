@@ -1,27 +1,31 @@
-import { useEffect, useState } from "react";
 import { Layout, Menu } from "antd";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
+
+import {
+  AiOutlineLeft,
+  AiOutlineRight,
+  AiOutlineDashboard,
+  AiOutlineLogout,
+} from "react-icons/ai";
+
+import { FaListAlt } from "react-icons/fa";
+import { ImBlogger, ImBlog } from "react-icons/im";
+import { BiCategory, BiCategoryAlt } from "react-icons/bi";
+import { BsFillCartFill } from "react-icons/bs";
+import { IoMdNotifications } from "react-icons/io";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { MdOutlineCategory } from "react-icons/md";
 
 import {
   logout,
   selectCurrentUser,
   selectUserStatus,
 } from "../../features/auth/authSlice";
-
-import {
-  AiOutlineDashboard,
-  AiOutlineLeft,
-  AiOutlineRight,
-} from "react-icons/ai";
-import { HiOutlineUserGroup } from "react-icons/hi";
-import { BsFillCartFill } from "react-icons/bs";
-import { BiCategory } from "react-icons/bi";
-import { FaListAlt } from "react-icons/fa";
-import { IoMdNotifications } from "react-icons/io";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -35,7 +39,7 @@ const AdminLayout = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userStatus === "idle") {
+    if (userStatus === "loggedOut") {
       return navigate("/login");
     }
   }, [userStatus]);
@@ -54,14 +58,9 @@ const AdminLayout = () => {
           mode="inline"
           defaultSelectedKeys={[""]}
           onClick={async ({ key, keyPath }) => {
-            // const path = keyPath.reverse().join("/");
-            // console.log(path);
-            console.log(key);
-
             if (key == "logout") {
               await dispatch(logout());
             } else {
-              // navigate(`/admin/${path}`);
               navigate(key);
             }
           }}
@@ -78,7 +77,7 @@ const AdminLayout = () => {
             },
             {
               key: "blogs",
-              icon: <BsFillCartFill className="fs-4" />,
+              icon: <ImBlogger className="fs-4" />,
               label: "Blogs",
               children: [
                 {
@@ -88,19 +87,19 @@ const AdminLayout = () => {
                 },
                 {
                   key: "blogs/user",
-                  icon: <BiCategory className="fs-4" />,
+                  icon: <ImBlog className="fs-4" />,
                   label: "By Users",
                 },
               ],
             },
             {
               key: "categories",
-              icon: <BsFillCartFill className="fs-4" />,
+              icon: <MdOutlineCategory className="fs-4" />,
               label: "Category",
               children: [
                 {
                   key: "categories/add",
-                  icon: <BiCategory className="fs-4" />,
+                  icon: <BiCategoryAlt className="fs-4" />,
                   label: "Add Category",
                 },
                 {
@@ -111,13 +110,8 @@ const AdminLayout = () => {
               ],
             },
             {
-              key: "enquiry",
-              icon: <FaListAlt className="fs-4" />,
-              label: "Enquiry",
-            },
-            {
               key: "logout",
-              icon: <FaListAlt className="fs-4" />,
+              icon: <AiOutlineLogout className="fs-4" />,
               label: "Logout",
             },
           ]}
@@ -145,19 +139,17 @@ const AdminLayout = () => {
             <div className="d-flex gap-3 align-items-center">
               <div className="w-100">
                 <img
-                  style={{ objectFit: "cover" }}
-                  height="32px"
-                  width="32px"
-                  src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                  alt=""
+                  style={{ objectFit: "cover", height: "32px", width: "32px" }}
+                  src={currentUser?.profilePic?.url}
+                  alt={currentUser?.name}
+                  title={currentUser?.name}
                 />
               </div>
               <div className="d-flex flex-column gap-1">
                 <h5 className="m-0 p-0 lh-1 fs-6 d-block">
-                  {/* {currentUser.firstname + " " + currentUser.lastname} */}
-                  {currentUser.name}
+                  {currentUser?.name}
                 </h5>
-                <p className="m-0 p-0 lh-1 small">{currentUser.email}</p>
+                <p className="m-0 p-0 lh-1 small">{currentUser?.email}</p>
               </div>
             </div>
           </div>

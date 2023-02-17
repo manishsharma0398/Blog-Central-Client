@@ -1,0 +1,28 @@
+.dashboard {
+  display: flex;
+  gap: 30px;
+  flex-direction: column;
+
+  &-statistics {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    &-card {
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+      max-width: 200px;
+      width: 100%;
+
+      text-align: center;
+      padding: 20px 0;
+    }
+  }
+
+  &-chart {
+    max-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+}

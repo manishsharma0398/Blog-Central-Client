@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { AiFillDelete } from "react-icons/ai";
 import { toast } from "react-toastify";
+import { BiEdit } from "react-icons/bi";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 
 import {
   getAllBlogs,
@@ -10,11 +13,9 @@ import {
   selectBlogsError,
 } from "../../features/blog/blogSlice";
 
-import { BiEdit } from "react-icons/bi";
-import { AiFillDelete } from "react-icons/ai";
-
 import TableComponent from "../../components/common-components/TableComponent";
 import CustomModal from "../../components/common-components/CustomModal";
+import { Tag } from "antd";
 
 const columns = [
   {
@@ -38,9 +39,9 @@ const columns = [
     key: "user",
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
+    title: "Tags",
+    dataIndex: "tags",
+    key: "tags",
   },
   {
     title: "Engagement",
@@ -54,11 +55,6 @@ const columns = [
         title: "Likes",
         dataIndex: "likes",
         key: "likes",
-      },
-      {
-        title: "Comments",
-        dataIndex: "comments",
-        key: "comments",
       },
     ],
   },
@@ -81,7 +77,7 @@ const AllBlogs = () => {
   const blogs = useSelector(selectBlogsData);
 
   useEffect(() => {
-    dispatch(getAllBlogs());
+    dispatch(getAllBlogs({}));
   }, []);
 
   useEffect(() => {
@@ -112,17 +108,17 @@ const AllBlogs = () => {
 
   const data = [];
   for (let i = 0; i < blogs?.length; i++) {
-    const { _id, user, title, category } = blogs[i];
+    const { _id, user, title, category, likes, views, tags } = blogs[i];
 
     data.push({
       key: _id,
       slNo: i + 1,
-      user: <Link to={`/admin/user/${user._id}`}>{user.name}</Link>,
+      user: <Link to={`/admin/users/${user._id}`}>{user.name}</Link>,
       title,
-      status: "",
-      category: "",
-      // category?.category[0].toUpperCase() + category?.category?.splice(1),
-
+      likes,
+      views,
+      tags: tags.map((tag) => <Tag>{tag}</Tag>),
+      category: capitalizeFirstLetter(category.category),
       action: (
         <>
           <Link to={`/admin/categories/edit/${_id}`}>

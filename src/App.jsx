@@ -3,25 +3,26 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import UserLayout from "./components/layout/user-layout/UserLayout";
 import AdminLayout from "./components/layout/AdminLayout";
 
-import HomePage from "./common-pages/HomePage";
 import Login from "./common-pages/auth/Login";
-import Register from "./common-pages/auth/Register";
-import ForgotPassword from "./common-pages/auth/ForgotPassword";
-import ResetPassword from "./common-pages/auth/ResetPassword";
+import HomePage from "./common-pages/HomePage";
 import NoContent from "./common-pages/NoContent";
+import Register from "./common-pages/auth/Register";
+import ResetPassword from "./common-pages/auth/ResetPassword";
+import ForgotPassword from "./common-pages/auth/ForgotPassword";
 
 import Users from "./admin-pages/Users";
-import AddCategory from "./admin-pages/category/AddCategory";
-import CategoryList from "./admin-pages/category/CategoryList";
 import AllBlogs from "./admin-pages/blogs/AllBlogs";
 import BlogsByUser from "./admin-pages/blogs/BlogsByUser";
+import AddCategory from "./admin-pages/category/AddCategory";
+import CategoryList from "./admin-pages/category/CategoryList";
 
+import Draft from "./user-pages/Draft";
 import Index from "./user-pages/Index";
 import MyBlogs from "./user-pages/MyBlogs";
-import Draft from "./user-pages/Draft";
 import Write from "./user-pages/add-blog/New Blog";
-import SingleBlog from "./user-pages/single/SingleBlog";
 import Profile from "./user-pages/profile/Profile";
+import SingleBlog from "./user-pages/single/SingleBlog";
+import Dashboard from "./admin-pages/dashboard/Dashboard";
 import UpdateProfile from "./user-pages/profile/UpdateProfile";
 
 import "antd/dist/reset.css";
@@ -30,24 +31,29 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/">
-          <Route index element={<HomePage />} />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="">
+          <Route path="/" element={<UserLayout />}>
+            <Route index element={<HomePage />} />
 
-          <Route path="user" element={<UserLayout />}>
-            <Route index element={<Index />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="profile/update" element={<UpdateProfile />} />
-            <Route path="blogs" element={<MyBlogs />} />
-            <Route path="blogs/:blogId" element={<SingleBlog />} />
-            <Route path="draft" element={<Draft />} />
-            <Route path="write" element={<Write />} />
-            <Route path="write/:blogId" element={<Write />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+
+            <Route path="user">
+              <Route index element={<Index />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="profile/update" element={<UpdateProfile />} />
+              <Route path="blogs" element={<MyBlogs />} />
+              <Route path="blogs/:blogId" element={<SingleBlog />} />
+              <Route path="draft" element={<Draft />} />
+              <Route path="write" element={<Write />} />
+              <Route path="write/:blogId" element={<Write />} />
+            </Route>
           </Route>
 
           <Route path="admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+
             <Route path="users" element={<Users />} />
 
             <Route path="categories/add" element={<AddCategory />} />
@@ -62,8 +68,8 @@ const App = () => {
               <Route path="user" element={<BlogsByUser />} />
             </Route>
           </Route>
+          <Route path="*" element={<NoContent />} />
         </Route>
-        <Route path="*" element={<NoContent />} />
       </Routes>
     </BrowserRouter>
   );

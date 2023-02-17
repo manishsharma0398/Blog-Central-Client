@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import moment from "moment/moment";
-import { Button, Image, Result } from "antd";
+import { Button, Descriptions, Image, Result } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { BsFacebook, BsInstagram, BsLinkedin, BsTwitter } from "react-icons/bs";
@@ -17,6 +17,8 @@ import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { FALLBACK_PROFILE_PIC } from "../../utils/variables";
 
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
+
+import "./profile.scss";
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -50,7 +52,7 @@ const Profile = () => {
       }
     />
   ) : (
-    <div>
+    <div className="user-profile-info">
       <Button
         className="my-3"
         onClick={() => navigate("update")}
@@ -59,7 +61,7 @@ const Profile = () => {
         Edit Profile
       </Button>
 
-      <div style={{ maxHeight: "300px", maxWidth: "300px" }}>
+      <div style={{ maxHeight: "300px", maxWidth: "300px", margin: "auto" }}>
         {profilePicStatus === "deleting" || profilePicStatus === "updating" ? (
           <Spin />
         ) : profilePicError === "rejected" ? (
@@ -79,45 +81,65 @@ const Profile = () => {
         )}
       </div>
 
-      <p className="mt-3">Mobile : {profile?.mobile}</p>
-      <p>
-        Gender : {profile?.gender && capitalizeFirstLetter(profile?.gender)}
-      </p>
-      <p>DOB: {moment(profile?.dateOfBirth).format("Do MMMM, YYYY")}</p>
-      <p>Country : {profile?.country}</p>
-      <p>State/Region : {profile?.stateOrRegion}</p>
-      <p>City : {profile?.city}</p>
-      <p>Zipcode : {profile?.zipCode}</p>
-      <div className="d-flex gap-3">
-        {profile?.socialProfiles?.instagram && (
-          <p>
-            <Link target="_blank" to={profile?.socialProfiles?.instagram}>
-              <BsInstagram className="fs-4" color="#C13584" />
-            </Link>
-          </p>
-        )}
-        {profile?.socialProfiles?.facebook && (
-          <p>
-            <Link target="_blank" to={profile?.socialProfiles?.facebook}>
-              <BsFacebook className="fs-4" color="#4267B2" />
-            </Link>
-          </p>
-        )}
-        {profile?.socialProfiles?.linkedin && (
-          <p>
-            <Link target="_blank" to={profile?.socialProfiles?.linkedin}>
-              <BsLinkedin className="fs-4" color="#0e76a8" />
-            </Link>
-          </p>
-        )}
-        {profile?.socialProfiles?.twitter && (
-          <p>
-            <Link target="_blank" to={profile?.socialProfiles?.twitter}>
-              <BsTwitter className="fs-4" color="#1DA1F2" />
-            </Link>
-          </p>
-        )}
-      </div>
+      <Descriptions
+        title="User Info"
+        bordered
+        column={{
+          xxl: 1,
+          xl: 1,
+          lg: 1,
+          md: 1,
+          sm: 1,
+          xs: 1,
+        }}
+      >
+        <Descriptions.Item label="Mobile">{profile?.mobile}</Descriptions.Item>
+        <Descriptions.Item label="Gender">
+          {profile?.gender && capitalizeFirstLetter(profile?.gender)}
+        </Descriptions.Item>
+        <Descriptions.Item label="DOB">
+          {!profile?.dateOfBirth ||
+          profile?.dateOfBirth === null ||
+          profile?.dateOfBirth === ""
+            ? ""
+            : moment(profile?.dateOfBirth).format("Do MMMM, YYYY")}
+        </Descriptions.Item>
+        <Descriptions.Item label="Address"></Descriptions.Item>
+        <Descriptions.Item label="Country">
+          {profile?.country}
+        </Descriptions.Item>
+        <Descriptions.Item label="State/Region">
+          {profile?.stateOrRegion}
+        </Descriptions.Item>
+        <Descriptions.Item label="City">{profile?.city}</Descriptions.Item>
+        <Descriptions.Item label="Zipcode">
+          {profile?.zipCode}
+        </Descriptions.Item>
+        <Descriptions.Item label="Social Media Links">
+          <div className="d-flex gap-3">
+            {profile?.socialProfiles?.instagram && (
+              <Link target="_blank" to={profile?.socialProfiles?.instagram}>
+                <BsInstagram className="fs-4" color="#C13584" />
+              </Link>
+            )}
+            {profile?.socialProfiles?.facebook && (
+              <Link target="_blank" to={profile?.socialProfiles?.facebook}>
+                <BsFacebook className="fs-4" color="#4267B2" />
+              </Link>
+            )}
+            {profile?.socialProfiles?.linkedin && (
+              <Link target="_blank" to={profile?.socialProfiles?.linkedin}>
+                <BsLinkedin className="fs-4" color="#0e76a8" />
+              </Link>
+            )}
+            {profile?.socialProfiles?.twitter && (
+              <Link target="_blank" to={profile?.socialProfiles?.twitter}>
+                <BsTwitter className="fs-4" color="#1DA1F2" />
+              </Link>
+            )}
+          </div>
+        </Descriptions.Item>
+      </Descriptions>
     </div>
   );
 };

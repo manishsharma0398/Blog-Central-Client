@@ -61,7 +61,9 @@ const Login = () => {
         return navigate("/admin");
       }
       if (!profile || profile === null || profile === undefined) {
-        return navigate("/user/profile/update");
+        return navigate("/user/profile/update", {
+          state: { profileAfterLogin: true },
+        });
       } else {
         return navigate("/user");
       }

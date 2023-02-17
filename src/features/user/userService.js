@@ -28,10 +28,22 @@ const deleteProfilePicture = async (userId) => {
   return response;
 };
 
+const getAllUsers = async () => {
+  const response = await privateRequest.get(`/user/all`);
+  return response;
+};
+
+const getDashboardData = async () => {
+  const response = await privateRequest.get(`/user/dashboard`);
+  return response;
+};
+
 const userServices = {
+  getAllUsers,
   updateProfile,
   getAllProfiles,
   getUserProfile,
+  getDashboardData,
   updateProfilePicture,
   deleteProfilePicture,
 };

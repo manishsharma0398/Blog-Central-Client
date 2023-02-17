@@ -1,31 +1,108 @@
+import moment from "moment/moment";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Button, Popover, Tag } from "antd";
+import { LikeOutlined } from "@ant-design/icons";
+
+import { likeBlog } from "../../../features/blog/blogSlice";
+import { FALLBACK_PROFILE_PIC } from "../../../utils/variables";
+import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
 
 import "./blog.scss";
 
 const Blog = ({ data }) => {
-  const { _id, placeholderImg, title, description } = data;
+  const {
+    _id,
+    user,
+    tags,
+    title,
+    views,
+    likes,
+    liked,
+    category,
+    createdAt,
+    description,
+    placeholderImg,
+  } = data;
+
+  const dispatch = useDispatch();
+
+  const handleLikePost = async () => {
+    await dispatch(likeBlog(_id));
+  };
+
+  const userPopOverBlog = () => {
+    return (
+      <div className="d-flex gap-3">
+        <img
+          style={{ height: "100px", width: "100px" }}
+          src={data?.user?.profilePic?.url || FALLBACK_PROFILE_PIC}
+          alt={data?.user?.name}
+          title={data?.user?.name}
+        />
+        <div className="" style={{ height: "100px" }}>
+          <p>{data?.user?.name}</p>
+        </div>
+      </div>
+    );
+  };
 
   return (
-    <div className="row blog">
-      <div className="col-sm-12 col-md-8 d-flex flex-column gap-3 mb-4">
-        <Link className="blog-title" to={`/user/blogs/${_id}`}>
-          <h1>{title}</h1>
-        </Link>
+    <div className="blog">
+      <div className="blog-placeholder_image">
+        <img src={placeholderImg?.url} alt={title} />
+      </div>
+      <div className="blog-details">
+        <div className="blog-actions">
+          <Button
+            type={liked ? "primary" : "default"}
+            onClick={handleLikePost}
+            size="middle"
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            <LikeOutlined /> Like
+          </Button>
 
-        <div>{description}</div>
+          <Tag color="#108ee9" className="tags">
+            {!likes ? 0 : likes} likes
+          </Tag>
+          <Tag color="#f50" className="tags">
+            {views} views
+          </Tag>
+        </div>
 
         <Link
-          style={{ width: "max-content" }}
+          className="blog-details_title"
           to={`/user/blogs/${_id}`}
-          className="btn btn-outline-primary read-more"
+          state={{ category: category._id }}
         >
-          Read More
+          {title}
         </Link>
-      </div>
-      <div className="col-sm-12 col-md-4 img-container">
-        <img src={placeholderImg?.url} alt={title} />
+
+        <p className="blog-details_author">
+          <Popover content={userPopOverBlog}>
+            <Link className="author" to={`/user/${user?._id}`}>
+              {user?.name}
+            </Link>
+          </Popover>
+          <time>{moment(createdAt).fromNow()}</time>
+        </p>
+        <p className="blog-details_description">{description}</p>
+
+        <div className="blog-actions">
+          <Tag color="#108ee9" className="tags">
+            {capitalizeFirstLetter(category.category)}
+          </Tag>
+
+          {tags.map((tag, i) => (
+            <Tag key={i} color="#108ee9" className="tags">
+              #{tag}
+            </Tag>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
+
 export default Blog;

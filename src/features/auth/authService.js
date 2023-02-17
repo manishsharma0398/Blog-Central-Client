@@ -5,10 +5,16 @@ const login = async (userData) => {
   return response;
 };
 
+const register = async (userData) => {
+  const response = await publicRequest.post("/user/register", userData);
+  return response;
+};
+
 const logout = async () => {
   const response = await privateRequest.post("/auth/logout");
   return response;
 };
 
-const authService = { login, logout };
+const authService = { login, register, logout };
+
 export default authService;

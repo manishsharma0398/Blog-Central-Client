@@ -1,80 +1,117 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import * as yup from "yup";
+import { useFormik } from "formik";
+import { toast } from "react-toastify";
+import { useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-import Input from "../../components/Input";
+import {
+  register,
+  selectCurrentUser,
+  selectUserError,
+  selectUserStatus,
+} from "../../features/auth/authSlice";
+
+import CustomInput from "../../components/common-components/CustomInput";
 
 const Register = () => {
-  const initialRegistrationData = {
-    fullName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  };
+  const loadingRef = useRef(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [registrationData, setRegistrationData] = useState(
-    initialRegistrationData
-  );
+  const notifyLoading = () => (loadingRef.current = toast.loading("Loging In"));
 
-  const { fullName, email, password, confirmPassword } = registrationData;
+  const userError = useSelector(selectUserError);
+  const userStatus = useSelector(selectUserStatus);
+  const currentUser = useSelector(selectCurrentUser);
 
-  const onChange = (e) => {
-    setRegistrationData({
-      ...registrationData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  useEffect(() => {
+    if (userStatus === "rejected") {
+      toast.error(`${userError}`);
+    }
+    if (userStatus === "registered") {
+      toast.success("Account Created");
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-  };
+      return navigate("/login");
+    }
+  }, [currentUser, userStatus, userError]);
+
+  const schema = yup.object().shape({
+    fullName: yup.string().required("Name is required"),
+    email: yup
+      .string()
+      .email("Enter valid email")
+      .required("Email is required"),
+    password: yup.string().required("Password is required"),
+    confirmPassword: yup.string().required("Password is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    // validationSchema: schema,
+    onSubmit: async (values) => {
+      console.log(values);
+      // notifyLoading();
+      await dispatch(register(values));
+      // toast.dismiss(loadingRef.current);
+    },
+  });
 
   return (
     <div className="w-50 mx-auto h-100 py-5">
-      <form onSubmit={handleFormSubmit} className="card p-5">
+      <form onSubmit={formik.handleSubmit} className="card p-5">
         <h3 className="text-center mb-2">Register</h3>
         <p className="mb-4 text-center">
           Register to your Blog Central Account
         </p>
-        <Input
-          id="fullName"
+        {userError && <div className="error">{userError}</div>}
+        <CustomInput
+          id="name"
           label="Full Name"
-          type="text"
-          placeholder="Manish Sharma"
-          value={fullName}
-          onChange={onChange}
+          error={formik.errors.name}
+          value={formik.values.name}
+          touched={formik.touched.name}
+          onChange={formik.handleChange("name")}
         />
-        <Input
+        <CustomInput
           id="email"
-          label="Email address"
           type="email"
-          placeholder="abc@xyz.com"
+          label="Email address"
+          error={formik.errors.email}
+          value={formik.values.email}
+          touched={formik.touched.email}
+          onChange={formik.handleChange("email")}
           helpText="We'll never share your email with anyone else."
-          value={email}
-          onChange={onChange}
         />
-        <Input
+        <CustomInput
           id="password"
+          type="password"
           label="Password"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={onChange}
+          error={formik.errors.password}
+          value={formik.values.password}
+          touched={formik.touched.password}
+          onChange={formik.handleChange("password")}
         />
-        <Input
+        <CustomInput
           id="confirmPassword"
-          label="Confirm Password"
           type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={onChange}
+          label="Confirm password"
+          error={formik.errors.confirmPassword}
+          value={formik.values.confirmPassword}
+          touched={formik.touched.confirmPassword}
+          onChange={formik.handleChange("confirmPassword")}
         />
-        <button type="submit" className="btn btn-primary">
+
+        <button type="submit" className="btn btn-primary my-3">
           Register
         </button>
         <Link to="/login">
-          <div className="small m-0 p-0 mt-3">
-            Already have an account? Login
-          </div>
+          <div className="small m-0 p-0">Already have an account? Login</div>
         </Link>
       </form>
     </div>

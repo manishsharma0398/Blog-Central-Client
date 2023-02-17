@@ -13,11 +13,14 @@ import {
   selectBlogsStatus,
   selectBlogsData,
   selectBlogsError,
+  getAllBlogs,
 } from "../../features/blog/blogSlice";
 
 import CustomInput from "../../components/common-components/CustomInput";
 import CustomModal from "../../components/common-components/CustomModal";
 import TableComponent from "../../components/common-components/TableComponent";
+import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
+import { Tag } from "antd";
 
 const columns = [
   {
@@ -58,11 +61,6 @@ const columns = [
         dataIndex: "likes",
         key: "likes",
       },
-      {
-        title: "Comments",
-        dataIndex: "comments",
-        key: "comments",
-      },
     ],
   },
   {
@@ -94,7 +92,7 @@ const BlogsByUser = () => {
     validationSchema: schema,
     onSubmit: async (values) => {
       console.log(values);
-      await dispatch(getBlogsByUserId(values.userId));
+      await dispatch(getAllBlogs({ userId: values.userId }));
       toast.dismiss(loadingToast.current);
     },
   });
@@ -128,21 +126,17 @@ const BlogsByUser = () => {
 
   const data = [];
   for (let i = 0; i < blogs?.length; i++) {
-    const { _id, user, title, category } = blogs[i];
-
-    // console.log(category);
+    const { _id, user, title, category, likes, views, tags } = blogs[i];
 
     data.push({
       key: _id,
       slNo: i + 1,
       user: <Link to={`/admin/user/${user._id}`}>{user.name}</Link>,
       title,
-      status: "",
-      category: "",
-      // !category || category === null
-      //   ? ""
-      //   : category?.category[0]?.toUpperCase() +
-      //     category?.category?.splice(1),
+      likes,
+      views,
+      tags: tags.map((tag) => <Tag>{tag}</Tag>),
+      category: capitalizeFirstLetter(category.category),
       action: (
         <>
           <Link to={`/admin/categories/edit/${_id}`}>

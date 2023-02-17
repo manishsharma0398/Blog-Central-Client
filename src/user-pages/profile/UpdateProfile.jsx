@@ -2,7 +2,7 @@ import * as yup from "yup";
 import moment from "moment";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Image, Result, Spin } from "antd";
 import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,6 +37,7 @@ const UpdateProfile = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const notifyLoading = () =>
     (loadingToast.current = toast.loading(`Profile updating`));
@@ -51,7 +52,10 @@ const UpdateProfile = () => {
   const profilePicError = useSelector(selectProfilePicError);
 
   useEffect(() => {
-    dispatch(getUserProfileById(user?._id));
+    if (location?.state?.profileAfterLogin) {
+    } else {
+      dispatch(getUserProfileById(user?._id));
+    }
   }, []);
 
   useEffect(() => {
@@ -81,7 +85,12 @@ const UpdateProfile = () => {
     initialValues: {
       mobile: profile?.mobile || "",
       gender: profile?.gender || "",
-      dateOfBirth: moment(profile?.dateOfBirth).format().split("T")[0] || "",
+      dateOfBirth:
+        !profile?.dateOfBirth ||
+        profile?.dateOfBirth === null ||
+        profile?.dateOfBirth === ""
+          ? ""
+          : moment(profile?.dateOfBirth).format().split("T")[0] || "",
       country: profile?.country || "",
       stateOrRegion: profile?.stateOrRegion || "",
       city: profile?.city || "",
@@ -145,7 +154,7 @@ const UpdateProfile = () => {
       extra={
         <Button
           onClick={() => {
-            dispatch(getUserProfileById(user?.id));
+            dispatch(getUserProfileById(user?._id));
           }}
         >
           Reload Data
