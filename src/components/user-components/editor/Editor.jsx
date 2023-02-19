@@ -2,12 +2,12 @@ import { useMemo } from "react";
 import MagicUrl from "quill-magic-url";
 import { useDispatch } from "react-redux";
 import ReactQuill, { Quill } from "react-quill";
-import BlotFormatter from "quill-blot-formatter";
+// import BlotFormatter from "quill-blot-formatter";
 import QuillImageDropAndPaste from "quill-image-drop-and-paste";
 
 import { uploadBlogImages } from "../../../features/upload/uploadSlice";
 
-Quill.register("modules/blotFormatter", BlotFormatter);
+// Quill.register("modules/blotFormatter", BlotFormatter);
 Quill.register("modules/magicUrl", MagicUrl);
 Quill.register("modules/imageDropAndPaste", QuillImageDropAndPaste);
 
@@ -115,7 +115,7 @@ const Editor = ({
           image: selectLocalImage,
         },
       },
-      blotFormatter: {},
+      // blotFormatter: {},
       magicUrl: true,
       imageDropAndPaste: {
         handler: imageHandler,
