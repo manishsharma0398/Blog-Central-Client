@@ -14,6 +14,7 @@ export const store = configureStore({
     categories: categoriesSlice,
     user: userSlice,
   },
+  devTools: false,
 });
 
 export default store;
