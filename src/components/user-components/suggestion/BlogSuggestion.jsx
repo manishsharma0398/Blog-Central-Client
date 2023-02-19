@@ -8,7 +8,7 @@ const BlogSuggestion = ({ id, title, img }) => {
       <h2 className="p-0 m-0">{title}</h2>
       <img src={img} alt={title} />
       <Link
-        to={`/user/blogs/${id}`}
+        to={`/blogs/${id}`}
         className="btn btn-outline-primary read-more mt-1"
       >
         Read More

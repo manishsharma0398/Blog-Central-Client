@@ -65,11 +65,11 @@ export const getAllUsers = createAsyncThunk(
   }
 );
 
-export const getUserProfileById = createAsyncThunk(
-  "profile/get-by-id",
-  async (userId, thunkAPI) => {
+export const getAProfile = createAsyncThunk(
+  "profile/get-a-profile",
+  async (query, thunkAPI) => {
     try {
-      const response = await profileService.getUserProfile(userId);
+      const response = await profileService.getUserProfile(query);
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -184,17 +184,17 @@ export const profileSlice = createSlice({
         state.dashboard.data = [];
         state.dashboard.status = "error";
       })
-      .addCase(getUserProfileById.pending, (state) => {
+      .addCase(getAProfile.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(getUserProfileById.fulfilled, (state, action) => {
-        const { user, ...other } = action.payload || {};
-        state.profile = other;
+      .addCase(getAProfile.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.profile = action.payload;
         state.error = null;
         state.status = "fetched";
       })
-      .addCase(getUserProfileById.rejected, (state, action) => {
+      .addCase(getAProfile.rejected, (state, action) => {
         state.error = action.payload.message;
         state.profile = [];
         state.status = "error";

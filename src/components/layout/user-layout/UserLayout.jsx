@@ -23,12 +23,12 @@ const UserLayout = () => {
   const userStatus = useSelector(selectUserStatus);
   const userError = useSelector(selectUserError);
 
-  useEffect(() => {
-    if (!currentUser) {
-      toast.error("Please log in to continue");
-      return navigate("/login");
-    }
-  }, [currentUser]);
+  // useEffect(() => {
+  //   if (!currentUser) {
+  //     toast.error("Please log in to continue");
+  //     return navigate("/login");
+  //   }
+  // }, [currentUser]);
 
   return (
     <>

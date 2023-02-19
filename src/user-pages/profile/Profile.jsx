@@ -7,7 +7,7 @@ import { BsFacebook, BsInstagram, BsLinkedin, BsTwitter } from "react-icons/bs";
 
 import {
   selectProfileData,
-  getUserProfileById,
+  getAProfile,
   selectProfileStatus,
   selectProfilePicError,
   selectProfilePicStatus,
@@ -15,12 +15,13 @@ import {
 import { selectCurrentUser } from "../../features/auth/authSlice";
 import { capitalizeFirstLetter } from "../../utils/capitalizeFirstLetter";
 import { FALLBACK_PROFILE_PIC } from "../../utils/variables";
+import useAuth from "../../hooks/useAuth";
 
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
 
 import "./profile.scss";
 
-const Profile = () => {
+const Profile = ({ email, username, userId }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -32,8 +33,12 @@ const Profile = () => {
   const profilePicError = useSelector(selectProfilePicError);
 
   useEffect(() => {
-    dispatch(getUserProfileById(user?._id));
+    if (email || username || userId) {
+      dispatch(getAProfile({ email, username, userId }));
+    }
   }, []);
+
+  const { isAdmin, isLoggedIn, isUser } = useAuth();
 
   return profileStatus === "loading" ? (
     <LoadingPage />
@@ -44,7 +49,7 @@ const Profile = () => {
       extra={
         <Button
           onClick={() => {
-            dispatch(getUserProfileById(user?._id));
+            dispatch(getAProfile({ email, username, userId }));
           }}
         >
           Reload Data
@@ -53,13 +58,15 @@ const Profile = () => {
     />
   ) : (
     <div className="user-profile-info">
-      <Button
-        className="my-3"
-        onClick={() => navigate("update")}
-        type="primary"
-      >
-        Edit Profile
-      </Button>
+      {isLoggedIn && isUser && profile?.ownProfile && (
+        <Button
+          className="my-3"
+          onClick={() => navigate("update")}
+          type="primary"
+        >
+          Edit Profile
+        </Button>
+      )}
 
       <div style={{ maxHeight: "300px", maxWidth: "300px", margin: "auto" }}>
         {profilePicStatus === "deleting" || profilePicStatus === "updating" ? (
@@ -74,9 +81,9 @@ const Profile = () => {
               objectFit: "cover",
               padding: "10px",
             }}
-            alt={user?.name}
-            title={user?.name}
-            src={user?.profilePic?.url || FALLBACK_PROFILE_PIC}
+            alt={profile?.name}
+            title={profile?.name}
+            src={profile?.profilePic?.url || FALLBACK_PROFILE_PIC}
           />
         )}
       </div>
@@ -93,47 +100,65 @@ const Profile = () => {
           xs: 1,
         }}
       >
-        <Descriptions.Item label="Mobile">{profile?.mobile}</Descriptions.Item>
+        <Descriptions.Item label="Name">{profile?.name}</Descriptions.Item>
+        <Descriptions.Item label="Mobile">
+          {profile?.profile?.mobile}
+        </Descriptions.Item>
         <Descriptions.Item label="Gender">
-          {profile?.gender && capitalizeFirstLetter(profile?.gender)}
+          {profile?.profile?.gender &&
+            capitalizeFirstLetter(profile?.profile?.gender)}
         </Descriptions.Item>
         <Descriptions.Item label="DOB">
-          {!profile?.dateOfBirth ||
-          profile?.dateOfBirth === null ||
-          profile?.dateOfBirth === ""
+          {!profile?.profile?.dateOfBirth ||
+          profile?.profile?.dateOfBirth === null ||
+          profile?.profile?.dateOfBirth === ""
             ? ""
-            : moment(profile?.dateOfBirth).format("Do MMMM, YYYY")}
+            : moment(profile?.profile?.dateOfBirth).format("Do MMMM, YYYY")}
         </Descriptions.Item>
         <Descriptions.Item label="Address"></Descriptions.Item>
         <Descriptions.Item label="Country">
-          {profile?.country}
+          {profile?.profile?.country}
         </Descriptions.Item>
         <Descriptions.Item label="State/Region">
-          {profile?.stateOrRegion}
+          {profile?.profile?.stateOrRegion}
         </Descriptions.Item>
-        <Descriptions.Item label="City">{profile?.city}</Descriptions.Item>
+        <Descriptions.Item label="City">
+          {profile?.profile?.city}
+        </Descriptions.Item>
         <Descriptions.Item label="Zipcode">
-          {profile?.zipCode}
+          {profile?.profile?.zipCode}
         </Descriptions.Item>
         <Descriptions.Item label="Social Media Links">
           <div className="d-flex gap-3">
-            {profile?.socialProfiles?.instagram && (
-              <Link target="_blank" to={profile?.socialProfiles?.instagram}>
+            {profile?.profile?.socialProfiles?.instagram && (
+              <Link
+                target="_blank"
+                to={profile?.profile?.socialProfiles?.instagram}
+              >
                 <BsInstagram className="fs-4" color="#C13584" />
               </Link>
             )}
-            {profile?.socialProfiles?.facebook && (
-              <Link target="_blank" to={profile?.socialProfiles?.facebook}>
+            {profile?.profile?.socialProfiles?.facebook && (
+              <Link
+                target="_blank"
+                to={profile?.profile?.socialProfiles?.facebook}
+              >
                 <BsFacebook className="fs-4" color="#4267B2" />
               </Link>
             )}
-            {profile?.socialProfiles?.linkedin && (
-              <Link target="_blank" to={profile?.socialProfiles?.linkedin}>
+            {profile?.profile?.socialProfiles?.linkedin && (
+              <Link
+                target="_blank"
+                to={profile?.profile?.socialProfiles?.linkedin}
+              >
                 <BsLinkedin className="fs-4" color="#0e76a8" />
               </Link>
             )}
-            {profile?.socialProfiles?.twitter && (
-              <Link target="_blank" to={profile?.socialProfiles?.twitter}>
+            {profile?.profile?.socialProfiles?.twitter && (
+              <Link
+                target="_blank"
+                to={profile?.profile?.socialProfiles?.twitter}
+              >
                 <BsTwitter className="fs-4" color="#1DA1F2" />
               </Link>
             )}

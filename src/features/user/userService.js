@@ -10,8 +10,14 @@ const getAllProfiles = async () => {
   return response;
 };
 
-const getUserProfile = async (userId) => {
-  const response = await publicRequest.get(`/profile/${userId}`);
+const getUserProfile = async (query) => {
+  const { email, userId, username } = query;
+
+  const response = await privateRequest.get(
+    `/profile/?userId=${userId || ""}&email=${email || ""}&username=${
+      username || ""
+    }`
+  );
   return response;
 };
 

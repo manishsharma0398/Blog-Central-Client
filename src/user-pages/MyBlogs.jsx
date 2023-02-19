@@ -1,10 +1,8 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
   getAllBlogs,
-  getUserBlogs,
   selectBlogsData,
   selectBlogsStatus,
 } from "../features/blog/blogSlice";
@@ -12,18 +10,17 @@ import {
 import Blog from "../components/user-components/blog/Blog";
 import ResultPage from "../components/common-components/ResultPage";
 import LoadingPage from "../components/common-components/loading-page/LoadingPage";
-import { selectCurrentUserId } from "../features/auth/authSlice";
 
-const MyBlogs = () => {
+const MyBlogs = ({ email, username, userID }) => {
   const allBlogs = useSelector(selectBlogsData);
   const blogStatus = useSelector(selectBlogsStatus);
-  const userId = useSelector(selectCurrentUserId);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllBlogs({ userId }));
+    if (email || username || userID) {
+      dispatch(getAllBlogs({ email, username, userId: userID }));
+    }
   }, []);
 
   return blogStatus === "loading" ? (
@@ -43,14 +40,15 @@ const MyBlogs = () => {
       goToLink="/user/write"
     />
   ) : (
-    <>
+    <div className="my-blogs">
+      <h3 className="mb-4">My Blogs </h3>
       <div className="blog-posts">
         {allBlogs &&
           allBlogs.map((blog) => {
             return <Blog key={blog._id} data={blog} />;
           })}
       </div>
-    </>
+    </div>
   );
 };
 export default MyBlogs;

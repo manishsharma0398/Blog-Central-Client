@@ -39,10 +39,9 @@ export const getUserBlogs = createAsyncThunk(
 
 export const getABlog = createAsyncThunk(
   "blog/getABlog",
-  async (blogId, { getState }, thunkAPI) => {
+  async (blogId, thunkAPI) => {
     try {
-      const userId = getState().auth.currentUser.user._id;
-      const response = await blogServices.getABlog(blogId, userId);
+      const response = await blogServices.getABlog(blogId);
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -117,6 +116,9 @@ export const blogSlice = createSlice({
   reducers: {
     setBlogStatus(state, action) {
       state.status = action.payload;
+    },
+    resetBlogSlice(state, action) {
+      state.blogs = [];
     },
   },
   extraReducers: (builder) => {
@@ -254,6 +256,6 @@ export const selectBlogsError = (state) => state.blogs.error;
 export const selectBlogsStatus = (state) => state.blogs.status;
 export const selectBlogsData = (state) => state.blogs.blogs.blogs;
 
-export const { setBlogStatus } = blogSlice.actions;
+export const { setBlogStatus, resetBlogSlice } = blogSlice.actions;
 
 export default blogSlice.reducer;

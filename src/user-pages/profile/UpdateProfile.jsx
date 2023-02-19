@@ -11,7 +11,7 @@ import {
   updateProfile,
   selectProfileData,
   selectProfileError,
-  getUserProfileById,
+  getAProfile,
   selectProfileStatus,
   deleteProfilePicture,
   updateProfilePicture,
@@ -54,7 +54,7 @@ const UpdateProfile = () => {
   useEffect(() => {
     if (location?.state?.profileAfterLogin) {
     } else {
-      dispatch(getUserProfileById(user?._id));
+      dispatch(getAProfile(user?._id));
     }
   }, []);
 
@@ -154,7 +154,7 @@ const UpdateProfile = () => {
       extra={
         <Button
           onClick={() => {
-            dispatch(getUserProfileById(user?._id));
+            dispatch(getAProfile(user?._id));
           }}
         >
           Reload Data

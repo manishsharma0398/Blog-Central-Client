@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   deleteProfilePicture,
-  getUserProfileById,
+  getAProfile,
   updateProfilePicture,
 } from "../user/userSlice";
 
@@ -12,7 +12,11 @@ const userExist = localStorage.getItem("blog_central")
   : "";
 
 const initialState = {
-  currentUser: userExist ? userExist : null,
+  currentUser: userExist
+    ? userExist
+    : {
+        user: { profilePic: {} },
+      },
   status: userExist ? "loggedIn" : "idle",
   error: null,
 };
@@ -34,6 +38,30 @@ export const register = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const response = await authService.register(userData);
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const forgotPassword = createAsyncThunk(
+  "auth/forgot-password",
+  async (email, thunkAPI) => {
+    try {
+      const response = await authService.forgotPassword(email);
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/reset-password",
+  async (data, thunkAPI) => {
+    try {
+      const response = await authService.resetPassword(data);
       return response.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response.data);
@@ -96,19 +124,53 @@ export const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state, action) => {
         state.status = "loggedOut";
-        state.currentUser = null;
         state.error = null;
+        state.currentUser = {
+          user: { profilePic: {} },
+        };
       })
       .addCase(logout.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload.message;
       })
-      .addCase(getUserProfileById.fulfilled, (state, action) => {
-        state.currentUser.user.profilePic =
-          !action.payload || action.payload === null
-            ? {}
-            : action?.payload?.user?.profilePic;
-      })
+      // .addCase(getAProfile.fulfilled, (state, action) => {
+      //   // console.log(action.payload);
+      //   // console.log(state.curre)
+      //   // state.currentUser.user.profilePic =
+      //   //   action?.payload?.user?.profilePic || {};
+
+      //   // if(state.currentUser.user)
+
+      //   // console.log({ data: action.payload });
+
+      //   if (action.payload.profileNull) {
+      //     console.log("profile not available");
+      //     console.log(action.payload);
+      //     const { profileNull, ...other } = action.payload;
+      //     state.currentUser.user = other;
+      //   }
+
+      //   if (!action.payload.profileNull) {
+      //     console.log("profiel available");
+      //     state.currentUser.user.profilePic =
+      //       action.payload.profile.user.profilePic;
+      //   }
+
+      //   // if (state?.currentUser?._id) {
+      //   //   state.currentUser.user.profilePic =
+      //   //   action?.payload?.user?.profilePic
+      //   // } else {
+      //   //   state.currentUser = {
+      //   //     user: {
+      //   //       profilePic:
+      //   //     }
+      //   //   }
+      //   // }
+
+      //   // if(!state?.currentUser?.user) state.curr
+
+      //   // console.log(!state.currentUser?.user);
+      // })
       .addCase(updateProfilePicture.fulfilled, (state, action) => {
         state.currentUser.user.profilePic = action.payload.profilePic;
       })
@@ -122,5 +184,7 @@ export const selectUserError = (state) => state.auth.error;
 export const selectUserStatus = (state) => state.auth.status;
 export const selectCurrentUser = (state) => state.auth?.currentUser?.user;
 export const selectCurrentUserId = (state) => state.auth.currentUser?.user?._id;
+export const selectCurrentUserToken = (state) =>
+  state?.auth?.currentUser?.token;
 
 export default authSlice.reducer;

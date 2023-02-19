@@ -25,6 +25,7 @@
     "chart.js": "^4.2.1",
     "date-fns": "^2.29.3",
     "formik": "^2.2.9",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
     "quill-blot-formatter": "^1.0.5",
     "quill-image-drop-and-paste": "^1.2.14",

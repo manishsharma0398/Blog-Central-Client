@@ -16,19 +16,20 @@ const getUserBlogsByUserId = async (userId) => {
 };
 
 const getAllBlogs = async (filterData) => {
-  const { userId, page, sort, sortOrder, categories, search } = filterData;
+  const { userId, page, sort, sortOrder, categories, search, email } =
+    filterData;
   const response = await privateRequest.get(
     `/blog/all?userId=${userId}&page=${page}&sort=${sort || ""},${
       sortOrder || ""
     }&categories=${categories ? categories?.toString() : ""}&search=${
       search || ""
-    }`
+    }&email=${email || ""}`
   );
   return response;
 };
 
-const getABlog = async (blogId, userId) => {
-  const response = await privateRequest.get(`/blog/${blogId}?userId=${userId}`);
+const getABlog = async (blogId) => {
+  const response = await privateRequest.get(`/blog/${blogId}`);
   return response;
 };
 

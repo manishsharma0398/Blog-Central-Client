@@ -1,9 +1,9 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   login,
@@ -11,7 +11,6 @@ import {
   selectUserStatus,
   selectCurrentUser,
 } from "../../features/auth/authSlice";
-
 import { selectProfileData } from "../../features/user/userSlice";
 
 import Input from "../../components/Input";
@@ -20,6 +19,9 @@ const Login = () => {
   const loadingRef = useRef(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
+  const passwordReset = location.state?.passwordReset;
 
   const notifyLoading = () => (loadingRef.current = toast.loading("Loging In"));
 
@@ -49,6 +51,12 @@ const Login = () => {
   });
 
   useEffect(() => {
+    if (passwordReset) {
+      toast.success("Password Successfully changed. Please login to continue");
+    }
+  }, [passwordReset]);
+
+  useEffect(() => {
     if (userStatus === "loading") {
       notifyLoading();
     }
@@ -61,29 +69,17 @@ const Login = () => {
         return navigate("/admin");
       }
       if (!profile || profile === null || profile === undefined) {
-        return navigate("/user/profile/update", {
+        return navigate("/profile/update", {
           state: { profileAfterLogin: true },
         });
       } else {
-        return navigate("/user");
+        return navigate(from, { replace: true });
       }
     }
   }, [currentUser, userStatus, userError]);
 
   return (
     <div className="w-50 mx-auto h-100 py-5">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={true}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
       <form onSubmit={formik.handleSubmit} className="card p-5">
         <h3 className="text-center mb-2">Login</h3>
         <p className="mb-4 text-center">Login to your Blog Central Account</p>

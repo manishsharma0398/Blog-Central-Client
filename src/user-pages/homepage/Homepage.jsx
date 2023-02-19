@@ -28,9 +28,7 @@ const Index = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (userStatus === "loggedIn") {
-      dispatch(getAllBlogs({}));
-    }
+    dispatch(getAllBlogs({}));
   }, [userStatus]);
 
   const onChange = (pageNumber) => {

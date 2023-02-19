@@ -7,6 +7,7 @@ import { LikeOutlined } from "@ant-design/icons";
 import { likeBlog } from "../../../features/blog/blogSlice";
 import { FALLBACK_PROFILE_PIC } from "../../../utils/variables";
 import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
+import useAuth from "../../../hooks/useAuth";
 
 import "./blog.scss";
 
@@ -31,6 +32,8 @@ const Blog = ({ data }) => {
     await dispatch(likeBlog(_id));
   };
 
+  const { isLoggedIn, isUser, isAdmin } = useAuth();
+
   const userPopOverBlog = () => {
     return (
       <div className="d-flex gap-3">
@@ -54,15 +57,17 @@ const Blog = ({ data }) => {
       </div>
       <div className="blog-details">
         <div className="blog-actions">
-          <Button
-            type={liked ? "primary" : "default"}
-            onClick={handleLikePost}
-            size="middle"
-            style={{ display: "flex", alignItems: "center" }}
-          >
-            <LikeOutlined /> Like
-          </Button>
-
+          {/* TODO: do not show to admin and not logged in */}
+          {isLoggedIn && isUser && (
+            <Button
+              type={liked ? "primary" : "default"}
+              onClick={handleLikePost}
+              size="middle"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <LikeOutlined /> Like
+            </Button>
+          )}
           <Tag color="#108ee9" className="tags">
             {!likes ? 0 : likes} likes
           </Tag>
@@ -73,7 +78,7 @@ const Blog = ({ data }) => {
 
         <Link
           className="blog-details_title"
-          to={`/user/blogs/${_id}`}
+          to={`/blogs/${_id}`}
           state={{ category: category._id }}
         >
           {title}
@@ -81,7 +86,7 @@ const Blog = ({ data }) => {
 
         <p className="blog-details_author">
           <Popover content={userPopOverBlog}>
-            <Link className="author" to={`/user/${user?._id}`}>
+            <Link className="author" to={`/profile/${user?.email}`}>
               {user?.name}
             </Link>
           </Popover>

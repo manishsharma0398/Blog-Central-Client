@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const base_url = "http://localhost:5001/api";
+export const base_url = import.meta.env.VITE_BASE_URL;
 
 let store;
 export const injectStore = (_store) => {

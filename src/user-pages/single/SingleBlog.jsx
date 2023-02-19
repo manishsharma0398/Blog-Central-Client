@@ -18,6 +18,7 @@ import {
   selectSingleBlogData,
 } from "../../features/blog/blogSlice";
 import { selectCurrentUserId } from "../../features/auth/authSlice";
+import useAuth from "../../hooks/useAuth";
 
 import ResultPage from "../../components/common-components/ResultPage";
 import CustomModal from "../../components/common-components/CustomModal";
@@ -63,6 +64,8 @@ const SingleBlog = () => {
     await dispatch(deleteBlog(singleBlog?._id));
     setOpenDeleteModal(false);
   };
+
+  const { isLoggedIn, isUser } = useAuth();
 
   const {
     _id,
@@ -137,7 +140,7 @@ const SingleBlog = () => {
                   </span>
                 </p>
               </div>
-              {userId === authorId && (
+              {isLoggedIn && isUser && userId === authorId && (
                 <div className="edit">
                   <Link className="btn m-0 p-2" to={`/user/write/${_id}`}>
                     <GrEdit className="fs-4" />
@@ -159,11 +162,10 @@ const SingleBlog = () => {
             </div>
           </div>
           <div className="col-sm-12 col-md-4 col-lg-3 d-flex flex-column gap-4">
-            {allBlogs.length > 0 && (
+            {/* {allBlogs.length > 0 && (
               <>
                 <h3 className="fs-4">Other Posts you may like</h3>
 
-                {/* <div className="card card-body"> */}
                 {allBlogs.map((blog) => (
                   <BlogSuggestion
                     key={blog?._id}
@@ -173,9 +175,8 @@ const SingleBlog = () => {
                   />
                 ))}
 
-                {/* </div> */}
               </>
-            )}
+            )} */}
           </div>
         </div>
         <CustomModal
