@@ -3,9 +3,7 @@
 
 This is a web application for the Blog Central project, which allows users to view and manage blog posts. It is built using React, Redux, and React Router in the front end and Nodejs, Express, MongoDB and Cloudinary at backend.
 
-
-
-
+Visit the project: [https://blog-central-client.vercel.app/](https://blog-central-client.vercel.app/)
 
 ## Features
 
