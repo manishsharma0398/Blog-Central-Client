@@ -7,12 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
-  addNewBlog,
+  getABlog,
   updateBlog,
-  selectBlogsData,
-  selectBlogsError,
-  selectBlogsStatus,
+  addNewBlog,
   setBlogStatus,
+  resetSingleBlog,
+  selectSingleBlogData,
+  selectSingleBlogError,
+  selectSingleBlogStatus,
 } from "../../features/blog/blogSlice";
 import {
   getAllCategories,
@@ -30,23 +32,25 @@ import Editor from "../../components/user-components/editor/Editor";
 import CustomInput from "../../components/common-components/CustomInput";
 import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
 
-import "./newBlog.scss";
 import "react-quill/dist/quill.snow.css";
+import "./newBlog.scss";
 
 const Write = () => {
   const [uploadedImagesAddresses, setUploadedImagesAddresses] = useState([]);
-  const [editMode, setEditMode] = useState(null);
+
+  const params = useParams();
+  const blogId = params?.blogId;
 
   const loadingToast = useRef();
   const blogRef = useRef(null);
 
-  const params = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const allBlogs = useSelector(selectBlogsData);
-  const blogsError = useSelector(selectBlogsError);
-  const blogsStatus = useSelector(selectBlogsStatus);
+  const singleBlog = useSelector(selectSingleBlogData);
+  const singleBlogError = useSelector(selectSingleBlogError);
+  const singleBlogStatus = useSelector(selectSingleBlogStatus);
+
   const categories = useSelector(selectCategoriesData);
   const categoriesError = useSelector(selectCategoriesError);
   const categoriesStatus = useSelector(selectCategoriesStatus);
@@ -54,16 +58,8 @@ const Write = () => {
 
   const notifyLoading = () =>
     (loadingToast.current = toast.loading(
-      `${editMode ? "Updating" : "Adding"} Blog`
+      `${blogId ? "Updating" : "Adding"} Blog`
     ));
-
-  useEffect(() => {
-    const blogId = params?.blogId;
-    if (blogId) {
-      const blog = allBlogs.filter((blog) => blog._id === blogId);
-      setEditMode(blog[0]);
-    }
-  }, []);
 
   const newImageAddedToQuill = (data) => {
     setUploadedImagesAddresses((prevState) => [...prevState, data]);
@@ -73,19 +69,19 @@ const Write = () => {
     if (categoriesStatus === "idle") {
       dispatch(getAllCategories());
     }
-    if (blogsStatus === "rejected") {
-      toast.error(`${blogsError}`);
+    if (singleBlogStatus === "rejected") {
+      toast.error(`${singleBlogError}`);
       return;
     }
-    if (blogsStatus === "added") {
+    if (singleBlogStatus === "added") {
       toast.success("New Blog added");
-      return navigate(`/user/blogs/${allBlogs[0]._id}`);
+      return navigate(`/blogs/${singleBlog._id}`);
     }
-    if (blogsStatus === "updated") {
+    if (singleBlogStatus === "updated") {
       toast.success("Blog Updated");
-      return navigate(`/user/blogs/${editMode._id}`);
+      return navigate(`/blogs/${singleBlog._id}`);
     }
-  }, [categoriesStatus, blogsStatus, uploadImagesStatus]);
+  }, [categoriesStatus, singleBlogStatus, uploadImagesStatus]);
 
   const schema = yup.object().shape({
     blog: yup.string().required("Blog is required"),
@@ -101,12 +97,12 @@ const Write = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      blog: editMode?.blog || "",
-      title: editMode?.title || "",
-      visibility: editMode?.visibility || "",
-      category: editMode?.category?._id || "",
-      description: editMode?.description || "",
-      placeholderImg: editMode?.placeholderImg?.url || "",
+      blog: singleBlog?.blog || "",
+      title: singleBlog?.title || "",
+      visibility: singleBlog?.visibility || "",
+      category: singleBlog?.category?._id || "",
+      description: singleBlog?.description || "",
+      placeholderImg: singleBlog?.placeholderImg?.url || "",
     },
     validationSchema: schema,
     onSubmit: async (values) => {
@@ -125,15 +121,15 @@ const Write = () => {
         );
         res = url?.payload;
       } else {
-        res = editMode.placeholderImg;
+        res = singleBlog.placeholderImg;
       }
       const data = { ...values, placeholderImg: res, images: imagesToAdd };
 
-      if (!editMode) {
+      if (!singleBlog) {
         await dispatch(addNewBlog(data));
       }
 
-      if (editMode) {
+      if (singleBlog) {
         await dispatch(updateBlog({ data, blogId: params?.blogId }));
       }
       toast.dismiss(loadingToast.current);
@@ -154,28 +150,25 @@ const Write = () => {
     return imagesToAdd;
   };
 
-  const handleSaveAsDraft = () => {};
+  useEffect(() => {
+    formik.resetForm();
+    dispatch(resetSingleBlog());
+    if (blogId) {
+      dispatch(getABlog(blogId));
+    }
+  }, []);
 
-  return blogsStatus === "loading" ? (
+  return singleBlogStatus === "loading" ? (
     <LoadingPage />
   ) : (
     <form onSubmit={formik.handleSubmit} className="row my-3">
       <div className="col-md-12 col-lg-9">
-        {editMode && <h3 className="fs-4 py-4 pt-0"> Update Blog</h3>}
+        {blogId && <h3 className="fs-4 py-4 pt-0"> Update Blog</h3>}
 
         <div className="blog-form-buttons">
           {/* upload button */}
           <button type="submit" className="btn btn-primary">
-            {editMode ? "Update" : "Add"} Blog
-          </button>
-
-          {/* save as draft */}
-          <button
-            onClick={handleSaveAsDraft}
-            type="button"
-            className="btn btn-warning"
-          >
-            Save as draft
+            {blogId ? "Update" : "Add"} Blog
           </button>
         </div>
 
@@ -197,7 +190,7 @@ const Write = () => {
             placeholder="Description"
             id="description"
             style={{ height: "180px" }}
-            defaultValue={formik.values.description}
+            value={formik.values.description}
             onChange={formik.handleChange("description")}
           />
           <label htmlFor="description">Description</label>

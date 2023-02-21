@@ -4,10 +4,13 @@ import {
   selectCurrentUser,
   selectCurrentUserToken,
 } from "../features/auth/authSlice";
+import { selectProfileData } from "../features/user/userSlice";
 
 const useAuth = () => {
-  const token = useSelector(selectCurrentUserToken);
+  const profile = useSelector(selectProfileData);
   const userData = useSelector(selectCurrentUser);
+  const token = useSelector(selectCurrentUserToken);
+
   let isLoggedIn = false;
   let isUser = false;
   let isAdmin = false;
@@ -20,6 +23,6 @@ const useAuth = () => {
     role = userData?.role;
   }
 
-  return { isLoggedIn, isUser, isAdmin, role };
+  return { isLoggedIn, isUser, isAdmin, role, profile };
 };
 export default useAuth;

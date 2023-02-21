@@ -8,15 +8,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import {
+  getAProfile,
   updateProfile,
   selectProfileData,
   selectProfileError,
-  getAProfile,
   selectProfileStatus,
-  deleteProfilePicture,
   updateProfilePicture,
-  selectProfilePicStatus,
+  deleteProfilePicture,
   selectProfilePicError,
+  selectProfilePicStatus,
 } from "../../features/user/userSlice";
 import {
   selectUserStatus,
@@ -154,7 +154,7 @@ const UpdateProfile = () => {
       extra={
         <Button
           onClick={() => {
-            dispatch(getAProfile(user?._id));
+            dispatch(getAProfile({ userId: user?._id }));
           }}
         >
           Reload Data

@@ -26,7 +26,11 @@ import SingleBlog from "./user-pages/single/SingleBlog";
 import UpdateProfile from "./user-pages/profile/UpdateProfile";
 import UserProfile from "./user-pages/user-profile/UserProfile";
 
-import { OnlyAuthUser, OnlyNotAuth } from "./components/RouteProtection";
+import {
+  NoAdmin,
+  OnlyAuthUser,
+  OnlyNotAuth,
+} from "./components/RouteProtection";
 
 import "antd/dist/reset.css";
 
@@ -56,11 +60,14 @@ const App = () => {
           </Route>
 
           <Route path="/" element={<UserLayout />}>
-            <Route index element={<Index />} />
-            <Route path="blogs/:blogId" element={<SingleBlog />} />
-            <Route path="profile/update" element={<UpdateProfile />} />
-            <Route path="profile/:username" element={<UserProfile />} />
             <Route path="unauthorized" element={<Unauthorized />} />
+
+            <Route element={<NoAdmin />}>
+              <Route index element={<Index />} />
+              <Route path="blogs/:blogId" element={<SingleBlog />} />
+              <Route path="profile/update" element={<UpdateProfile />} />
+              <Route path="profile/:username" element={<UserProfile />} />
+            </Route>
 
             <Route element={<OnlyNotAuth />}>
               <Route path="login" element={<Login />} />

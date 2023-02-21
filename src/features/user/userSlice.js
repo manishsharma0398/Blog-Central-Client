@@ -23,7 +23,7 @@ const initialState = {
     status: "",
     error: null,
   },
-  profile: [],
+  profile: null,
   status: "idle",
   error: null,
 };
@@ -59,7 +59,6 @@ export const getAllUsers = createAsyncThunk(
       const response = await userServices.getAllUsers();
       return response.data;
     } catch (err) {
-      console.log(err);
       return thunkAPI.rejectWithValue(err.response.data);
     }
   }
@@ -189,7 +188,6 @@ export const profileSlice = createSlice({
         state.error = null;
       })
       .addCase(getAProfile.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.profile = action.payload;
         state.error = null;
         state.status = "fetched";

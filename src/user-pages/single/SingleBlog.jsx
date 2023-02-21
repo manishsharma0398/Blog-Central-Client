@@ -12,12 +12,11 @@ import {
   getABlog,
   deleteBlog,
   getAllBlogs,
-  selectBlogsData,
-  selectBlogsError,
-  selectBlogsStatus,
   selectSingleBlogData,
+  selectSingleBlogError,
+  selectSingleBlogStatus,
 } from "../../features/blog/blogSlice";
-import { selectCurrentUserId } from "../../features/auth/authSlice";
+import { selectCurrentUser } from "../../features/auth/authSlice";
 import useAuth from "../../hooks/useAuth";
 
 import ResultPage from "../../components/common-components/ResultPage";
@@ -34,12 +33,10 @@ const SingleBlog = () => {
   const history = useLocation();
   const navigate = useNavigate();
 
+  const currentUser = useSelector(selectCurrentUser);
   const singleBlog = useSelector(selectSingleBlogData);
-  const userId = useSelector(selectCurrentUserId);
-  const blogError = useSelector(selectBlogsError);
-  const blogStatus = useSelector(selectBlogsStatus);
-
-  const allBlogs = useSelector(selectBlogsData);
+  const singleBlogError = useSelector(selectSingleBlogError);
+  const singleBlogStatus = useSelector(selectSingleBlogStatus);
 
   useEffect(() => {
     dispatch(getABlog(params?.blogId));
@@ -47,11 +44,11 @@ const SingleBlog = () => {
   }, [params?.blogId, history?.state?.category]);
 
   useEffect(() => {
-    if (blogStatus === "deleted") {
+    if (singleBlogStatus === "deleted") {
       toast.warn("Blog Deleted");
-      return navigate("/user/blogs");
+      return navigate(`/profile/${currentUser?.email}`);
     }
-  }, [blogStatus]);
+  }, [singleBlogStatus]);
 
   const showModal = () => {
     setOpenDeleteModal(true);
@@ -81,31 +78,31 @@ const SingleBlog = () => {
   const { _id: authorId, name, profilePic } = user || {};
 
   {
-    return blogStatus === "loading" ? (
+    return singleBlogStatus === "loading" ? (
       <LoadingPage />
-    ) : blogStatus === "error" ? (
-      blogError === "Invalid Blog Id" ? (
+    ) : singleBlogStatus === "error" ? (
+      singleBlogError === "Invalid Blog Id" ? (
         <ResultPage
           title="Invalid Blog ID"
           subTitle="The Blog ID you entered is wrong"
           btnText="Back Home"
-          goToLink="/user"
+          goToLink="/"
           icon={<SmileOutlined />}
         />
-      ) : blogError === "Blog not found" ? (
+      ) : singleBlogError === "Blog not found" ? (
         <ResultPage
           status="404"
           title="Blog Not Found"
           subTitle="Blog either deleted or does not exist"
           btnText="Back Home"
-          goToLink="/user"
+          goToLink="/"
         />
       ) : (
         <ResultPage
           status="500"
           title="Sorry, something went wrong."
           btnText="Back Home"
-          goToLink="/user"
+          goToLink="/"
         />
       )
     ) : !singleBlog || singleBlog === null ? (
@@ -113,7 +110,7 @@ const SingleBlog = () => {
         status="500"
         title="Sorry, something went wrong."
         btnText="Back Home"
-        goToLink="/user"
+        goToLink="/"
       />
     ) : (
       <>
@@ -140,7 +137,7 @@ const SingleBlog = () => {
                   </span>
                 </p>
               </div>
-              {isLoggedIn && isUser && userId === authorId && (
+              {isLoggedIn && isUser && currentUser?._id === authorId && (
                 <div className="edit">
                   <Link className="btn m-0 p-2" to={`/user/write/${_id}`}>
                     <GrEdit className="fs-4" />

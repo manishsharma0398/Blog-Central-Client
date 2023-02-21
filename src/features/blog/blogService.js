@@ -19,7 +19,7 @@ const getAllBlogs = async (filterData) => {
   const { userId, page, sort, sortOrder, categories, search, email, limit } =
     filterData;
   const response = await privateRequest.get(
-    `/blog/all?userId=${userId}&page=${page}&sort=${sort || ""},${
+    `/blog/all?userId=${userId}&page=${page}&sort=${sort || ""}&sortOrder=${
       sortOrder || ""
     }&categories=${categories ? categories?.toString() : ""}&search=${
       search || ""

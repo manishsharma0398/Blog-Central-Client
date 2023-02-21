@@ -32,6 +32,7 @@ const Editor = ({
 
   async function saveToServer(file) {
     const res = await dispatch(uploadBlogImages(file));
+    console.log("Getting image object from server: ", res);
     const data = res?.payload;
     const url = data.url;
     newImageAddedToQuill(data);
@@ -46,6 +47,7 @@ const Editor = ({
 
     input.onchange = async () => {
       const file = input.files[0];
+      console.log("Getting file from computer: ", file);
       await saveToServer(file);
     };
   };

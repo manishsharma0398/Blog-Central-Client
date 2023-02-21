@@ -68,7 +68,6 @@ export const getAllBlogs = createAsyncThunk(
       const response = await blogServices.getAllBlogs(filterData);
       return response.data;
     } catch (err) {
-      console.log(err.response);
       return thunkAPI.rejectWithValue(err.response.data);
     }
   }
@@ -118,26 +117,44 @@ export const blogSlice = createSlice({
       state.status = action.payload;
     },
     resetBlogSlice(state, action) {
-      state.blogs = [];
+      // state.blogs = [];
+      // singleBlog: {
+      //   blog: null,
+      //   error: null,
+      //   status: "idle",
+      // },
+    },
+    resetSingleBlog(state, action) {
+      state.singleBlog.blog = null;
+      state.singleBlog.error = null;
+      state.singleBlog.status = "idle";
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(addNewBlog.pending, (state) => {
-        state.status = "loading";
-        state.blogs = [];
-        state.error = null;
+        state.singleBlog.status = "loading";
+        // state.singleBlog.blog = [];
+        state.singleBlog.blog = null;
+        state.singleBlog.error = null;
       })
       .addCase(addNewBlog.fulfilled, (state, action) => {
-        // console.log(action.payload);
-        state.blogs = [action.payload];
-        state.error = null;
-        state.status = "added";
+        // state.blogs = [action.payload];
+        // state.error = null;
+        // state.status = "added";
+
+        state.singleBlog.blog = action.payload;
+        state.singleBlog.error = null;
+        state.singleBlog.status = "added";
       })
       .addCase(addNewBlog.rejected, (state, action) => {
-        state.status = "error";
-        state.blogs = [];
-        state.error = action.payload.message;
+        // state.status = "error";
+        // state.blogs = [];
+        // state.error = action.payload.message;
+
+        state.singleBlog.status = "error";
+        state.singleBlog.blog = [];
+        state.singleBlog.error = action.payload.message;
       })
       .addCase(getUserBlogs.pending, (state) => {
         state.status = "loading";
@@ -211,19 +228,18 @@ export const blogSlice = createSlice({
         state.blogs = [];
       })
       .addCase(deleteBlog.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.singleBlog.status = "loading";
+        state.singleBlog.error = null;
       })
       .addCase(deleteBlog.fulfilled, (state, action) => {
-        state.status = "deleted";
-        state.error = null;
-        state.blogs = null;
+        state.singleBlog.status = "deleted";
+        state.singleBlog.error = null;
+        state.singleBlog.blog = null;
       })
       .addCase(deleteBlog.rejected, (state, action) => {
-        console.log(action.payload);
-        state.status = "error";
-        state.error = action.payload.message;
-        state.blogs = [];
+        state.singleBlog.status = "error";
+        state.singleBlog.error = action.payload.message;
+        state.singleBlog.blog = null;
       })
       .addCase(likeBlog.pending, (state) => {
         // state.status = "loading";
@@ -256,6 +272,7 @@ export const selectBlogsError = (state) => state.blogs.error;
 export const selectBlogsStatus = (state) => state.blogs.status;
 export const selectBlogsData = (state) => state.blogs.blogs.blogs;
 
-export const { setBlogStatus, resetBlogSlice } = blogSlice.actions;
+export const { setBlogStatus, resetBlogSlice, resetSingleBlog } =
+  blogSlice.actions;
 
 export default blogSlice.reducer;

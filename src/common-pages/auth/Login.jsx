@@ -63,20 +63,23 @@ const Login = () => {
     if (userStatus === "rejected") {
       toast.error(`${userError}`);
     }
-    if (userStatus === "loggedIn") {
-      toast.success("Logged In");
-      if (currentUser.role === "admin") {
-        return navigate("/admin");
-      }
-      if (!profile || profile === null || profile === undefined) {
-        return navigate("/profile/update", {
-          state: { profileAfterLogin: true },
-        });
-      } else {
-        return navigate(from, { replace: true });
-      }
-    }
-  }, [currentUser, userStatus, userError]);
+    // if (userStatus === "loggedIn") {
+    //   toast.success("Logged In");
+    //   console.log({ currentUser, userStatus, profile });
+
+    //   if (currentUser.role === "admin") {
+    //     return navigate("/admin");
+    //   }
+    //   if (!profile || profile === null || profile === undefined) {
+    //     return navigate("/profile/update", {
+    //       state: { profileAfterLogin: true },
+    //     });
+    //   } else {
+    //     return navigate(from, { replace: true });
+    //   }
+    // }
+  }, [userStatus, currentUser, profile]);
+  // }, [userStatus, currentUser, profile]);
 
   return (
     <form onSubmit={formik.handleSubmit} className="card login form">
