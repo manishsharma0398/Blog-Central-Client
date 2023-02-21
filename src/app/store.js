@@ -14,7 +14,7 @@ export const store = configureStore({
     categories: categoriesSlice,
     user: userSlice,
   },
-  devTools: false,
+  devTools: import.meta.env.MODE !== "production",
 });
 
 export default store;

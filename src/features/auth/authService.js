@@ -18,8 +18,6 @@ const forgotPassword = async (email) => {
 const resetPassword = async (data) => {
   const { token, ...other } = data;
 
-  console.log(data);
-
   const response = await publicRequest.post(`/auth/password-reset/${token}`, {
     ...other,
   });

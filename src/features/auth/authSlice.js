@@ -7,8 +7,16 @@ import {
 
 import authService from "./authService";
 
-const userExist = localStorage.getItem("blog_central")
-  ? JSON.parse(localStorage.getItem("blog_central"))
+const userExist = localStorage.getItem(
+  import.meta.env.MODE === "production" ? "blog_central" : "blog_central_test"
+)
+  ? JSON.parse(
+      localStorage.getItem(
+        import.meta.env.MODE === "production"
+          ? "blog_central"
+          : "blog_central_test"
+      )
+    )
   : "";
 
 const initialState = {
@@ -72,8 +80,17 @@ export const resetPassword = createAsyncThunk(
 export const logout = createAsyncThunk("auth/logout", async (thunkAPI) => {
   try {
     const response = await authService.logout();
-    localStorage.setItem("blog_central", JSON.stringify(""));
-    localStorage.removeItem("blog_central");
+    localStorage.setItem(
+      import.meta.env.MODE === "production"
+        ? "blog_central"
+        : "blog_central_test",
+      JSON.stringify("")
+    );
+    localStorage.removeItem(
+      import.meta.env.MODE === "production"
+        ? "blog_central"
+        : "blog_central_test"
+    );
     return response.data;
   } catch (err) {
     console.log(err);
@@ -93,7 +110,12 @@ export const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         const { profile, ...other } = action.payload;
-        localStorage.setItem("blog_central", JSON.stringify(other));
+        localStorage.setItem(
+          import.meta.env.MODE === "production"
+            ? "blog_central"
+            : "blog_central_test",
+          JSON.stringify(other)
+        );
         state.currentUser = other;
         state.error = null;
         state.status = "loggedIn";

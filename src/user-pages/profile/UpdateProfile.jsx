@@ -2,10 +2,10 @@ import * as yup from "yup";
 import moment from "moment";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
-import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Image, Result, Spin } from "antd";
 import { useRef, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import {
   updateProfile,
@@ -54,14 +54,14 @@ const UpdateProfile = () => {
   useEffect(() => {
     if (location?.state?.profileAfterLogin) {
     } else {
-      dispatch(getAProfile(user?._id));
+      dispatch(getAProfile({ userId: user?._id }));
     }
   }, []);
 
   useEffect(() => {
     if (profileStatus === "updated") {
       toast.success("Profile Updated");
-      return navigate("/user/profile");
+      return navigate(`/profile/${user.email}`);
     }
   }, [profileStatus]);
 
@@ -83,23 +83,23 @@ const UpdateProfile = () => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      mobile: profile?.mobile || "",
-      gender: profile?.gender || "",
+      mobile: profile?.profile?.mobile || "",
+      gender: profile?.profile?.gender || "",
       dateOfBirth:
-        !profile?.dateOfBirth ||
-        profile?.dateOfBirth === null ||
-        profile?.dateOfBirth === ""
+        !profile?.profile?.dateOfBirth ||
+        profile?.profile?.dateOfBirth === null ||
+        profile?.profile?.dateOfBirth === ""
           ? ""
-          : moment(profile?.dateOfBirth).format().split("T")[0] || "",
-      country: profile?.country || "",
-      stateOrRegion: profile?.stateOrRegion || "",
-      city: profile?.city || "",
-      zipCode: profile?.zipCode || "",
-      twitter: profile?.socialProfiles?.twitter || "",
-      facebook: profile?.socialProfiles?.facebook || "",
-      linkedin: profile?.socialProfiles?.linkedin || "",
-      instagram: profile?.socialProfiles?.instagram || "",
-      profilePic: user?.profilePic?.url || "",
+          : moment(profile?.profile?.dateOfBirth).format().split("T")[0] || "",
+      country: profile?.profile?.country || "",
+      stateOrRegion: profile?.profile?.stateOrRegion || "",
+      city: profile?.profile?.city || "",
+      zipCode: profile?.profile?.zipCode || "",
+      twitter: profile?.profile?.socialProfiles?.twitter || "",
+      facebook: profile?.profile?.socialProfiles?.facebook || "",
+      linkedin: profile?.profile?.socialProfiles?.linkedin || "",
+      instagram: profile?.profile?.socialProfiles?.instagram || "",
+      profilePic: profile?.profile?.user?.profilePic?.url || "",
     },
     validationSchema: schema,
     onSubmit: async (values) => {
@@ -201,8 +201,8 @@ const UpdateProfile = () => {
                 padding: "10px",
               }}
               fallback={FALLBACK_PROFILE_PIC}
-              alt={user?.name}
-              title={user?.name}
+              alt={profile?.profile?.user?.name}
+              title={profile?.profile?.user?.name}
               src={
                 new RegExp(/^[a-z][a-z0-9+.-]*:/).test(
                   formik?.values?.profilePic

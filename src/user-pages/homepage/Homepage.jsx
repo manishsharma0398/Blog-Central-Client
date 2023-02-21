@@ -19,6 +19,7 @@ import "./styles.scss";
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(4);
 
   const allBlogs = useSelector(selectBlogsData);
   const userStatus = useSelector(selectUserStatus);
@@ -28,16 +29,23 @@ const Index = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getAllBlogs({}));
+    dispatch(getAllBlogs({ page: currentPage, limit }));
   }, [userStatus]);
 
   const onChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    setCurrentPage((_) => pageNumber);
+    dispatch(getAllBlogs({ page: currentPage, limit }));
+  };
+
+  const handleBlogFiltration = (data) => {
+    console.log(data);
+
+    dispatch(getAllBlogs({ ...data, page: currentPage, limit }));
   };
 
   return (
     <div className="index">
-      <FilterBlogs page={currentPage} />
+      <FilterBlogs handleBlogFiltration={handleBlogFiltration} />
       <div className="blog-posts">
         {blogStatus === "loading" ? (
           <LoadingPage />
@@ -67,7 +75,7 @@ const Index = () => {
           <Pagination
             onChange={onChange}
             totalDocuments={blogMetaData?.totalDocuments}
-            // totalDocuments={500}
+            limit={limit}
           />
         </div>
       </div>

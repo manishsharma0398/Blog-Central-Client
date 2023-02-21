@@ -16,7 +16,9 @@ const UserProfile = () => {
       <div className="profile">
         <Profile email={path?.username} />
       </div>
-      {isLoggedIn && isUser && <MyBlogs email={path?.username} />}
+      <div className="blogs">
+        {isLoggedIn && isUser && <MyBlogs email={path?.username} />}
+      </div>
     </div>
   );
 };

@@ -16,14 +16,14 @@ const getUserBlogsByUserId = async (userId) => {
 };
 
 const getAllBlogs = async (filterData) => {
-  const { userId, page, sort, sortOrder, categories, search, email } =
+  const { userId, page, sort, sortOrder, categories, search, email, limit } =
     filterData;
   const response = await privateRequest.get(
     `/blog/all?userId=${userId}&page=${page}&sort=${sort || ""},${
       sortOrder || ""
     }&categories=${categories ? categories?.toString() : ""}&search=${
       search || ""
-    }&email=${email || ""}`
+    }&email=${email || ""}&limit=${limit || ""}`
   );
   return response;
 };

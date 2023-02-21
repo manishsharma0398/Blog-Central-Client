@@ -141,3 +141,26 @@ img {
     gap: 40px;
   }
 }
+
+.form {
+  padding: 48px;
+  max-width: 767px !important;
+  width: 100% !important;
+  margin: 24px auto;
+}
+
+.login,
+.register,
+.forgot-password {
+  max-width: 500px !important;
+}
+
+@media only screen and (max-width: 500px) {
+  .form {
+    padding: 10px;
+    margin: 50px auto;
+    box-shadow: none;
+    border: none !important;
+    outline: none;
+  }
+}

@@ -42,46 +42,44 @@ const ForgotPassword = () => {
   });
 
   return (
-    <div className="w-50 mx-auto h-100 py-5">
-      <form onSubmit={formik.handleSubmit} className="card p-5">
-        <h3 className="text-center mb-2">Forgot Password</h3>
-        <p className="mb-4 text-center">
-          Reset Your Blog Central Account Password
-        </p>
+    <form onSubmit={formik.handleSubmit} className="card form forgot-password">
+      <h3 className="text-center mb-2">Forgot Password</h3>
+      <p className="mb-4 text-center">
+        Reset Your Blog Central Account Password
+      </p>
 
-        {formik.touched.email && formik.errors.email && (
-          <div className="error">{formik.errors.email}</div>
+      {formik.touched.email && formik.errors.email && (
+        <div className="error">{formik.errors.email}</div>
+      )}
+
+      {emailSent && <div className="text-success">{emailSent}</div>}
+
+      <Input
+        id="email"
+        label="Email address"
+        type="email"
+        placeholder="abc@xyz.com"
+        helpText="An email will be sent to this email address"
+        value={formik.values.email}
+        onChange={formik.handleChange("email")}
+      />
+
+      <button
+        disabled={isLoading}
+        type="submit"
+        className="mt-3 btn btn-primary"
+      >
+        {isLoading ? (
+          <span
+            className="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          />
+        ) : (
+          "Send Email"
         )}
-
-        {emailSent && <div className="text-success">{emailSent}</div>}
-
-        <Input
-          id="email"
-          label="Email address"
-          type="email"
-          placeholder="abc@xyz.com"
-          helpText="An email will be sent to this email address"
-          value={formik.values.email}
-          onChange={formik.handleChange("email")}
-        />
-
-        <button
-          disabled={isLoading}
-          type="submit"
-          className="mt-3 btn btn-primary"
-        >
-          {isLoading ? (
-            <span
-              className="spinner-border spinner-border-sm"
-              role="status"
-              aria-hidden="true"
-            />
-          ) : (
-            "Send Email"
-          )}
-        </button>
-      </form>
-    </div>
+      </button>
+    </form>
   );
 };
 export default ForgotPassword;

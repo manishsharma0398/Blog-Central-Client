@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
+import { toast } from "react-toastify";
 import { useEffect, useRef } from "react";
-import { toast, ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
@@ -79,57 +79,55 @@ const Login = () => {
   }, [currentUser, userStatus, userError]);
 
   return (
-    <div className="w-50 mx-auto h-100 py-5">
-      <form onSubmit={formik.handleSubmit} className="card p-5">
-        <h3 className="text-center mb-2">Login</h3>
-        <p className="mb-4 text-center">Login to your Blog Central Account</p>
+    <form onSubmit={formik.handleSubmit} className="card login form">
+      <h3 className="text-center mb-2">Login</h3>
+      <p className="mb-4 text-center">Login to your Blog Central Account</p>
 
-        {userError && <div className="error text-center">{userError}</div>}
+      {userError && <div className="error text-center">{userError}</div>}
 
-        <Input
-          id="email"
-          label="Email address"
-          type="email"
-          placeholder="abc@xyz.com"
-          value={formik.values.email}
-          onChange={formik.handleChange("email")}
-        />
+      <Input
+        id="email"
+        label="Email address"
+        type="email"
+        placeholder="abc@xyz.com"
+        value={formik.values.email}
+        onChange={formik.handleChange("email")}
+      />
 
-        {formik.touched.email && formik.errors.email ? (
-          <div className="text-danger">{formik.errors.email}</div>
-        ) : null}
+      {formik.touched.email && formik.errors.email ? (
+        <div className="text-danger">{formik.errors.email}</div>
+      ) : null}
 
-        <Input
-          id="password"
-          label="Password"
-          type="password"
-          placeholder="Password"
-          value={formik.values.password}
-          onChange={formik.handleChange("password")}
-        />
-        {formik.touched.password && formik.errors.password ? (
-          <div className="text-danger">{formik.errors.password}</div>
-        ) : null}
+      <Input
+        id="password"
+        label="Password"
+        type="password"
+        placeholder="Password"
+        value={formik.values.password}
+        onChange={formik.handleChange("password")}
+      />
+      {formik.touched.password && formik.errors.password ? (
+        <div className="text-danger">{formik.errors.password}</div>
+      ) : null}
 
-        <div
-          className={`small m-0 p-0 d-flex justify-content-end mb-3 ${
-            !formik.errors.password && "mt-2"
-          }`}
-        >
-          <Link to="/forgot-password">Forgot Password</Link>
+      <div
+        className={`small m-0 p-0 d-flex justify-content-end mb-3 ${
+          !formik.errors.password && "mt-2"
+        }`}
+      >
+        <Link to="/forgot-password">Forgot Password</Link>
+      </div>
+
+      <button type="submit" className="btn btn-primary">
+        Login
+      </button>
+
+      <Link to="/register">
+        <div className="small m-0 p-0 mt-3">
+          Don't have an account? Register
         </div>
-
-        <button type="submit" className="btn btn-primary">
-          Login
-        </button>
-
-        <Link to="/register">
-          <div className="small m-0 p-0 mt-3">
-            Don't have an account? Register
-          </div>
-        </Link>
-      </form>
-    </div>
+      </Link>
+    </form>
   );
 };
 export default Login;

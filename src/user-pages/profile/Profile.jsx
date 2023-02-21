@@ -61,7 +61,7 @@ const Profile = ({ email, username, userId }) => {
       {isLoggedIn && isUser && profile?.ownProfile && (
         <Button
           className="my-3"
-          onClick={() => navigate("update")}
+          onClick={() => navigate("/profile/update")}
           type="primary"
         >
           Edit Profile
@@ -89,6 +89,7 @@ const Profile = ({ email, username, userId }) => {
       </div>
 
       <Descriptions
+        className="mt-3"
         title="User Info"
         bordered
         column={{

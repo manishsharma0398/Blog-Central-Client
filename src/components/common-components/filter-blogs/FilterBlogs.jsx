@@ -2,7 +2,7 @@ import * as yup from "yup";
 import { useEffect } from "react";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Divider, Input, Pagination, Select } from "antd";
+import { Checkbox, Divider, Input, Select } from "antd";
 
 import {
   getAllCategories,
@@ -14,9 +14,7 @@ import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
 
 import "./filterBlogs.scss";
 
-const FilterBlogs = ({ page }) => {
-  // const [page, setPage] = useState(1);
-
+const FilterBlogs = ({ handleBlogFiltration }) => {
   useEffect(() => {
     dispatch(getAllCategories());
   }, []);
@@ -57,13 +55,13 @@ const FilterBlogs = ({ page }) => {
     },
     validationSchema: schema,
     onSubmit: async (values) => {
-      dispatch(getAllBlogs({ ...values, page }));
+      handleBlogFiltration(values);
     },
   });
 
-  useEffect(() => {
-    dispatch(getAllBlogs({ ...formik.values, page }));
-  }, [page]);
+  // useEffect(() => {
+  //   dispatch(getAllBlogs({ ...formik.values, page }));
+  // }, [page]);
 
   const onSortOrderHandler = () => {
     if (formik.values.sortOrder === "asc") {
@@ -83,18 +81,33 @@ const FilterBlogs = ({ page }) => {
 
       <Divider />
 
-      <div>
+      <div className="filter">
         <div className="filter-blogs-sort">
           <p>Sort By:</p>
           <div className="filter-blogs-sort-actions">
             <Select
               className="sort-dropdown"
+              value={formik.values.sort}
               defaultValue="views"
               style={{
                 width: 120,
               }}
               onChange={formik.handleChange("sort")}
-              options={sort}
+              // onChange={(a) => console.log(a)}
+              options={[
+                {
+                  value: "views",
+                  label: "Views",
+                },
+                {
+                  value: "likes",
+                  label: "Likes",
+                },
+                {
+                  value: "createdAt",
+                  label: "Created At",
+                },
+              ]}
             />
 
             <button

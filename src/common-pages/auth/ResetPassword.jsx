@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
 import Input from "../../components/Input";
+
 import { resetPassword } from "../../features/auth/authSlice";
 
 const ChangePassword = () => {

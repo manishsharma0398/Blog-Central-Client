@@ -1,5 +1,13 @@
 .user-profile-page {
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 50px;
+  margin: 0px 0 50px 0;
+}
+
+@media only screen and (max-width: 500px) {
+  .user-profile-page {
+    gap: 30px;
+    margin: 10px 0 30px 0;
+  }
 }
