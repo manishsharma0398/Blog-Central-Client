@@ -2,8 +2,8 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import { toast } from "react-toastify";
 import { useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   login,
@@ -18,9 +18,7 @@ import Input from "../../components/Input";
 const Login = () => {
   const loadingRef = useRef(null);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
   const passwordReset = location.state?.passwordReset;
 
   const notifyLoading = () => (loadingRef.current = toast.loading("Loging In"));
@@ -63,23 +61,7 @@ const Login = () => {
     if (userStatus === "rejected") {
       toast.error(`${userError}`);
     }
-    // if (userStatus === "loggedIn") {
-    //   toast.success("Logged In");
-    //   console.log({ currentUser, userStatus, profile });
-
-    //   if (currentUser.role === "admin") {
-    //     return navigate("/admin");
-    //   }
-    //   if (!profile || profile === null || profile === undefined) {
-    //     return navigate("/profile/update", {
-    //       state: { profileAfterLogin: true },
-    //     });
-    //   } else {
-    //     return navigate(from, { replace: true });
-    //   }
-    // }
   }, [userStatus, currentUser, profile]);
-  // }, [userStatus, currentUser, profile]);
 
   return (
     <form onSubmit={formik.handleSubmit} className="card login form">

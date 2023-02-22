@@ -1,8 +1,8 @@
 import * as yup from "yup";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useFormik } from "formik";
+import { Checkbox, Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { Checkbox, Divider, Input, Select } from "antd";
 
 import {
   getAllCategories,
@@ -14,7 +14,7 @@ import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
 
 import "./filterBlogs.scss";
 
-const FilterBlogs = ({ handleBlogFiltration }) => {
+const FilterBlogs = () => {
   useEffect(() => {
     dispatch(getAllCategories());
   }, []);
@@ -42,7 +42,6 @@ const FilterBlogs = ({ handleBlogFiltration }) => {
     categories: yup.array().of(yup.string()),
     sortOrder: yup.string(),
     sort: yup.string(),
-    search: yup.string(),
   });
 
   const formik = useFormik({
@@ -51,17 +50,10 @@ const FilterBlogs = ({ handleBlogFiltration }) => {
       categories: [],
       sort: "views",
       sortOrder: "asc",
-      search: "",
     },
     validationSchema: schema,
-    onSubmit: async (values) => {
-      handleBlogFiltration(values);
-    },
+    onSubmit: async (values) => {},
   });
-
-  // useEffect(() => {
-  //   dispatch(getAllBlogs({ ...formik.values, page }));
-  // }, [page]);
 
   const onSortOrderHandler = () => {
     if (formik.values.sortOrder === "asc") {
@@ -71,16 +63,38 @@ const FilterBlogs = ({ handleBlogFiltration }) => {
     }
   };
 
+  const debounceAPICall = (func) => {
+    let timer;
+
+    return function (...args) {
+      const context = this;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = null;
+        func.apply(context, args);
+      }, 1000);
+    };
+  };
+
+  const onChangeSearch = () => {
+    dispatch(getAllBlogs({ ...formik.values }));
+  };
+
+  const optimisedSearch = debounceAPICall(onChangeSearch);
+  // const optimisedSearch = useCallback(debounceAPICall(onChangeSearch), []);
+
+  // useEffect(() => {
+  //   // dispatch(getAllBlogs({ ...formik.values }));
+  //   optimisedSearch();
+  // }, []);
+
+  useEffect(() => {
+    // dispatch(getAllBlogs({ ...formik.values }));
+    optimisedSearch();
+  }, [formik.values.categories, formik.values.sort, formik.values.sortOrder]);
+
   return (
     <form onSubmit={formik.handleSubmit} className="filter-blogs">
-      <Input
-        value={formik.values.search}
-        onChange={formik.handleChange("search")}
-        placeholder="Search Blog"
-      />
-
-      <Divider />
-
       <div className="filter">
         <div className="filter-blogs-sort">
           <p>Sort By:</p>
@@ -93,21 +107,7 @@ const FilterBlogs = ({ handleBlogFiltration }) => {
                 width: 120,
               }}
               onChange={formik.handleChange("sort")}
-              // onChange={(a) => console.log(a)}
-              options={[
-                {
-                  value: "views",
-                  label: "Views",
-                },
-                {
-                  value: "likes",
-                  label: "Likes",
-                },
-                {
-                  value: "createdAt",
-                  label: "Created At",
-                },
-              ]}
+              options={sort}
             />
 
             <button
@@ -126,9 +126,9 @@ const FilterBlogs = ({ handleBlogFiltration }) => {
             <p>Filter By Categories:</p>
             <Checkbox.Group
               className="filter-blogs-categories-list"
-              onChange={(categories) =>
-                formik.setFieldValue("categories", categories)
-              }
+              onChange={(categories) => {
+                formik.setFieldValue("categories", categories);
+              }}
             >
               {categories.map((cat) => (
                 <Checkbox key={cat._id} value={cat._id}>
@@ -139,12 +139,6 @@ const FilterBlogs = ({ handleBlogFiltration }) => {
           </div>
         )}
       </div>
-
-      <Divider />
-
-      <button type="submit" className="btn btn-primary">
-        Search
-      </button>
     </form>
   );
 };

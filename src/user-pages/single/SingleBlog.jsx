@@ -43,13 +43,6 @@ const SingleBlog = () => {
     dispatch(getAllBlogs({ categories: history?.state?.category }));
   }, [params?.blogId, history?.state?.category]);
 
-  useEffect(() => {
-    if (singleBlogStatus === "deleted") {
-      toast.warn("Blog Deleted");
-      return navigate(`/profile/${currentUser?.email}`);
-    }
-  }, [singleBlogStatus]);
-
   const showModal = () => {
     setOpenDeleteModal(true);
   };
@@ -58,8 +51,15 @@ const SingleBlog = () => {
   };
 
   const handleDeletePost = async () => {
-    await dispatch(deleteBlog(singleBlog?._id));
+    const response = await dispatch(deleteBlog(singleBlog?._id));
+    console.log(response);
+
     setOpenDeleteModal(false);
+
+    if (response.type === "blog/delete/fulfilled") {
+      toast.warn("Blog Deleted");
+      return navigate(`/profile/${currentUser?.email}`);
+    }
   };
 
   const { isLoggedIn, isUser } = useAuth();
