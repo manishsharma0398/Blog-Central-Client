@@ -52,7 +52,6 @@ const SingleBlog = () => {
 
   const handleDeletePost = async () => {
     const response = await dispatch(deleteBlog(singleBlog?._id));
-    console.log(response);
 
     setOpenDeleteModal(false);
 

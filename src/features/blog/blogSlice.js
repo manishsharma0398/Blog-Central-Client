@@ -116,14 +116,6 @@ export const blogSlice = createSlice({
     setBlogStatus(state, action) {
       state.status = action.payload;
     },
-    resetBlogSlice(state, action) {
-      // state.blogs = [];
-      // singleBlog: {
-      //   blog: null,
-      //   error: null,
-      //   status: "idle",
-      // },
-    },
     resetSingleBlog(state, action) {
       state.singleBlog.blog = null;
       state.singleBlog.error = null;
@@ -134,24 +126,15 @@ export const blogSlice = createSlice({
     builder
       .addCase(addNewBlog.pending, (state) => {
         state.singleBlog.status = "loading";
-        // state.singleBlog.blog = [];
         state.singleBlog.blog = null;
         state.singleBlog.error = null;
       })
       .addCase(addNewBlog.fulfilled, (state, action) => {
-        // state.blogs = [action.payload];
-        // state.error = null;
-        // state.status = "added";
-
         state.singleBlog.blog = action.payload;
         state.singleBlog.error = null;
         state.singleBlog.status = "added";
       })
       .addCase(addNewBlog.rejected, (state, action) => {
-        // state.status = "error";
-        // state.blogs = [];
-        // state.error = action.payload.message;
-
         state.singleBlog.status = "error";
         state.singleBlog.blog = [];
         state.singleBlog.error = action.payload.message;
@@ -214,18 +197,19 @@ export const blogSlice = createSlice({
         state.singleBlog.blog = null;
       })
       .addCase(updateBlog.pending, (state) => {
-        state.status = "loading";
-        state.error = null;
+        state.singleBlog.status = "loading";
+        state.singleBlog.blog = null;
+        state.singleBlog.error = null;
       })
       .addCase(updateBlog.fulfilled, (state, action) => {
-        state.blogs = [action.payload];
-        state.error = null;
-        state.status = "updated";
+        state.singleBlog.blog = action.payload;
+        state.singleBlog.error = null;
+        state.singleBlog.status = "updated";
       })
       .addCase(updateBlog.rejected, (state, action) => {
-        state.error = action.payload.message;
-        state.status = "error";
-        state.blogs = [];
+        state.singleBlog.error = action.payload.message;
+        state.singleBlog.blog = null;
+        state.singleBlog.status = "error";
       })
       .addCase(deleteBlog.pending, (state) => {
         state.singleBlog.status = "loading";
@@ -272,7 +256,6 @@ export const selectBlogsError = (state) => state.blogs.error;
 export const selectBlogsStatus = (state) => state.blogs.status;
 export const selectBlogsData = (state) => state.blogs.blogs.blogs;
 
-export const { setBlogStatus, resetBlogSlice, resetSingleBlog } =
-  blogSlice.actions;
+export const { setBlogStatus, resetSingleBlog } = blogSlice.actions;
 
 export default blogSlice.reducer;

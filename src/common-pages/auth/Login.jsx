@@ -9,11 +9,10 @@ import {
   login,
   selectUserError,
   selectUserStatus,
-  selectCurrentUser,
 } from "../../features/auth/authSlice";
-import { selectProfileData } from "../../features/user/userSlice";
 
-import Input from "../../components/Input";
+import CustomInput from "../../components/common-components/CustomInput";
+import LoadingPage from "../../components/common-components/loading-page/LoadingPage";
 
 const Login = () => {
   const loadingRef = useRef(null);
@@ -25,8 +24,6 @@ const Login = () => {
 
   const userError = useSelector(selectUserError);
   const userStatus = useSelector(selectUserStatus);
-  const currentUser = useSelector(selectCurrentUser);
-  const profile = useSelector(selectProfileData);
 
   const schema = yup.object().shape({
     email: yup
@@ -43,6 +40,7 @@ const Login = () => {
     },
     validationSchema: schema,
     onSubmit: async (values) => {
+      notifyLoading();
       await dispatch(login(values));
       toast.dismiss(loadingRef.current);
     },
@@ -54,46 +52,34 @@ const Login = () => {
     }
   }, [passwordReset]);
 
-  useEffect(() => {
-    if (userStatus === "loading") {
-      notifyLoading();
-    }
-    if (userStatus === "rejected") {
-      toast.error(`${userError}`);
-    }
-  }, [userStatus, currentUser, profile]);
-
-  return (
+  return userStatus === "loading" ? (
+    <LoadingPage />
+  ) : (
     <form onSubmit={formik.handleSubmit} className="card login form">
       <h3 className="text-center mb-2">Login</h3>
       <p className="mb-4 text-center">Login to your Blog Central Account</p>
 
       {userError && <div className="error text-center">{userError}</div>}
 
-      <Input
+      <CustomInput
         id="email"
-        label="Email address"
         type="email"
-        placeholder="abc@xyz.com"
+        label="Email address"
+        error={formik.errors.email}
         value={formik.values.email}
-        onChange={formik.handleChange("email")}
+        touched={formik.touched.email}
+        onChange={formik.handleChange}
       />
 
-      {formik.touched.email && formik.errors.email ? (
-        <div className="text-danger">{formik.errors.email}</div>
-      ) : null}
-
-      <Input
+      <CustomInput
         id="password"
-        label="Password"
         type="password"
-        placeholder="Password"
+        label="Password"
+        error={formik.errors.password}
         value={formik.values.password}
-        onChange={formik.handleChange("password")}
+        touched={formik.touched.password}
+        onChange={formik.handleChange}
       />
-      {formik.touched.password && formik.errors.password ? (
-        <div className="text-danger">{formik.errors.password}</div>
-      ) : null}
 
       <div
         className={`small m-0 p-0 d-flex justify-content-end mb-3 ${

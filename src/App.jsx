@@ -1,4 +1,13 @@
+import { Spin } from "antd";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+import {
+  selectCurrentUser,
+  handleRefreshToken,
+  selectCurrentUserToken,
+} from "./features/auth/authSlice";
 
 import AdminLayout from "./components/layout/AdminLayout";
 import UserLayout from "./components/layout/user-layout/UserLayout";
@@ -35,7 +44,31 @@ import {
 import "antd/dist/reset.css";
 
 const App = () => {
-  return (
+  const dispatch = useDispatch();
+  const userStatus = useSelector(selectCurrentUser);
+  const userToken = useSelector(selectCurrentUserToken);
+
+  // useEffect(() => {
+  //   console.log("first");
+  //   // if (userToken) {
+  //   //   console.log(userToken);
+  //   dispatch(handleRefreshToken());
+  //   // }
+  // }, [userToken]);
+
+  return userStatus === "loading" || userStatus === "idle" ? (
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Spin />
+    </div>
+  ) : (
     <BrowserRouter>
       <Routes>
         <Route path="">
@@ -65,7 +98,6 @@ const App = () => {
             <Route element={<NoAdmin />}>
               <Route index element={<Index />} />
               <Route path="blogs/:blogId" element={<SingleBlog />} />
-              <Route path="profile/update" element={<UpdateProfile />} />
               <Route path="profile/:username" element={<UserProfile />} />
             </Route>
 
@@ -82,6 +114,7 @@ const App = () => {
               <Route path="user/settings" element={<Settings />} />
               <Route path="user/write" element={<Write />} />
               <Route path="user/write/:blogId" element={<Write />} />
+              <Route path="profile/update" element={<UpdateProfile />} />
             </Route>
           </Route>
 

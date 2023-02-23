@@ -1,11 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import {
-  deleteProfilePicture,
-  getAProfile,
-  updateProfilePicture,
-} from "../user/userSlice";
 
 import authService from "./authService";
+import { deleteProfilePicture, updateProfilePicture } from "../user/userSlice";
 
 const userExist = localStorage.getItem(
   import.meta.env.MODE === "production" ? "blog_central" : "blog_central_test"
@@ -77,6 +73,31 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const deleteUser = createAsyncThunk(
+  "auth/reset-password",
+  async (userId, thunkAPI) => {
+    try {
+      const response = await authService.deleteUser(userId);
+      return response.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
+export const handleRefreshToken = createAsyncThunk(
+  "auth/refresh-token",
+  async (token, thunkAPI) => {
+    try {
+      const response = await authService.handleRefreshToken(token);
+      return response.data;
+    } catch (err) {
+      console.log(err.response);
+      return thunkAPI.rejectWithValue(err.response.data);
+    }
+  }
+);
+
 export const logout = createAsyncThunk("auth/logout", async (thunkAPI) => {
   try {
     const response = await authService.logout();
@@ -126,7 +147,7 @@ export const authSlice = createSlice({
         state.currentUser = [];
       })
       .addCase(register.pending, (state) => {
-        state.status = "loading";
+        state.status = "registering";
         state.error = null;
         state.currentUser = null;
       })
@@ -138,6 +159,30 @@ export const authSlice = createSlice({
       .addCase(register.rejected, (state, action) => {
         state.status = "rejected";
         state.error = action.payload.message;
+        state.currentUser = null;
+      })
+      .addCase(handleRefreshToken.pending, (state) => {
+        state.status = "authenticating";
+        state.error = null;
+        state.currentUser = null;
+      })
+      .addCase(handleRefreshToken.fulfilled, (state, action) => {
+        console.log(action.payload);
+        // const { profile, ...other } = action.payload;
+        // localStorage.setItem(
+        //   import.meta.env.MODE === "production"
+        //     ? "blog_central"
+        //     : "blog_central_test",
+        //   JSON.stringify(other)
+        // );
+        // state.currentUser = other;
+        // state.error = null;
+        // state.status = "loggedIn";
+      })
+      .addCase(handleRefreshToken.rejected, (state, action) => {
+        console.log(action.payload);
+        state.status = "not-authenticated";
+        // state.error = action.payload.message;
         state.currentUser = null;
       })
       .addCase(logout.pending, (state) => {
@@ -155,44 +200,21 @@ export const authSlice = createSlice({
         state.status = "rejected";
         state.error = action.payload.message;
       })
-      // .addCase(getAProfile.fulfilled, (state, action) => {
-      //   // console.log(action.payload);
-      //   // console.log(state.curre)
-      //   // state.currentUser.user.profilePic =
-      //   //   action?.payload?.user?.profilePic || {};
-
-      //   // if(state.currentUser.user)
-
-      //   // console.log({ data: action.payload });
-
-      //   if (action.payload.profileNull) {
-      //     console.log("profile not available");
-      //     console.log(action.payload);
-      //     const { profileNull, ...other } = action.payload;
-      //     state.currentUser.user = other;
-      //   }
-
-      //   if (!action.payload.profileNull) {
-      //     console.log("profiel available");
-      //     state.currentUser.user.profilePic =
-      //       action.payload.profile.user.profilePic;
-      //   }
-
-      //   // if (state?.currentUser?._id) {
-      //   //   state.currentUser.user.profilePic =
-      //   //   action?.payload?.user?.profilePic
-      //   // } else {
-      //   //   state.currentUser = {
-      //   //     user: {
-      //   //       profilePic:
-      //   //     }
-      //   //   }
-      //   // }
-
-      //   // if(!state?.currentUser?.user) state.curr
-
-      //   // console.log(!state.currentUser?.user);
-      // })
+      .addCase(deleteUser.pending, (state) => {
+        state.status = "deleting";
+        state.error = null;
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        state.status = "deleted";
+        state.error = null;
+        state.currentUser = {
+          user: { profilePic: {} },
+        };
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.status = "rejected";
+        state.error = action.payload.message;
+      })
       .addCase(updateProfilePicture.fulfilled, (state, action) => {
         state.currentUser.user.profilePic = action.payload.profilePic;
       })

@@ -4,9 +4,9 @@ import { useFormik } from "formik";
 import { useDispatch } from "react-redux";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 
-import Input from "../../components/Input";
-
 import { resetPassword } from "../../features/auth/authSlice";
+
+import CustomInput from "../../components/common-components/CustomInput";
 
 const ChangePassword = () => {
   const location = useLocation();
@@ -56,17 +56,15 @@ const ChangePassword = () => {
   });
 
   return (
-    <>
-      <div className="w-50 mx-auto h-100 py-5">
-        <form onSubmit={formik.handleSubmit} className="card p-5">
-          <h3 className="text-center mb-2">Reset Password</h3>
-          <p className="mb-4 text-center">
-            Change your Blog Central Account Password
-          </p>
+    <form onSubmit={formik.handleSubmit} className="card form forgot-password">
+      <h3 className="text-center mb-2">Reset Password</h3>
+      <p className="mb-4 text-center">
+        Change your Blog Central Account Password
+      </p>
 
-          {authError && <div className="error">{authError}</div>}
+      {authError && <div className="error">{authError}</div>}
 
-          {/* 
+      {/* 
         <Input
           id="oldPassword"
           label="Current Password"
@@ -76,50 +74,44 @@ const ChangePassword = () => {
           onChange={onChange}
         /> */}
 
-          <Input
-            id="newPassword"
-            label="New Password"
-            type="password"
-            placeholder="New Password"
-            value={formik.values.password}
-            onChange={formik.handleChange("password")}
+      <CustomInput
+        id="newPassword"
+        label="New Password"
+        type="password"
+        placeholder="New Password"
+        value={formik.values.password}
+        onChange={formik.handleChange("password")}
+        error={formik.errors.password}
+        touched={formik.touched.password}
+      />
+
+      <CustomInput
+        error={formik.errors.confirmPassword}
+        touched={formik.touched.confirmPassword}
+        id="confirmPassword"
+        label="Confirm Password"
+        type="password"
+        placeholder="Confirm Password"
+        value={formik.values.confirmPassword}
+        onChange={formik.handleChange("confirmPassword")}
+      />
+
+      <button
+        disabled={isLoading}
+        type="submit"
+        className="mt-3 btn btn-primary"
+      >
+        {isLoading ? (
+          <span
+            className="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
           />
-
-          {formik.touched.password && formik.errors.password && (
-            <div className="error">{formik.errors.password}</div>
-          )}
-
-          <Input
-            id="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            placeholder="Confirm Password"
-            value={formik.values.confirmPassword}
-            onChange={formik.handleChange("confirmPassword")}
-          />
-
-          {formik.touched.confirmPassword && formik.errors.confirmPassword && (
-            <div className="error">{formik.errors.confirmPassword}</div>
-          )}
-
-          <button
-            disabled={isLoading}
-            type="submit"
-            className="mt-3 btn btn-primary"
-          >
-            {isLoading ? (
-              <span
-                className="spinner-border spinner-border-sm"
-                role="status"
-                aria-hidden="true"
-              />
-            ) : (
-              "Reset Password"
-            )}
-          </button>
-        </form>
-      </div>
-    </>
+        ) : (
+          "Reset Password"
+        )}
+      </button>
+    </form>
   );
 };
 export default ChangePassword;

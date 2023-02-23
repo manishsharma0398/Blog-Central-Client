@@ -15,6 +15,7 @@ export const getAllCategories = createAsyncThunk(
       // console.log(response);
       return response.data;
     } catch (err) {
+      console.log(err.response);
       return thunkAPI.rejectWithValue(err.response.data);
     }
   }
@@ -73,6 +74,7 @@ export const categoriesSlice = createSlice({
         state.error = null;
       })
       .addCase(getAllCategories.rejected, (state, action) => {
+        console.log(action);
         state.status = "rejected";
         state.error = action.payload.message;
       })

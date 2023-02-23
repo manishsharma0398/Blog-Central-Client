@@ -81,12 +81,6 @@ const FilterBlogs = () => {
   };
 
   const optimisedSearch = debounceAPICall(onChangeSearch);
-  // const optimisedSearch = useCallback(debounceAPICall(onChangeSearch), []);
-
-  // useEffect(() => {
-  //   // dispatch(getAllBlogs({ ...formik.values }));
-  //   optimisedSearch();
-  // }, []);
 
   useEffect(() => {
     // dispatch(getAllBlogs({ ...formik.values }));

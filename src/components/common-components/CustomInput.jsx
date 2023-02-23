@@ -8,9 +8,14 @@ const CustomInput = ({
   helpText,
   onChange,
   className,
+  errorOnTop,
 }) => {
   return (
     <>
+      {errorOnTop && touched && error ? (
+        <div className="text-danger">{error}</div>
+      ) : null}
+
       <div className="form-floating mt-3 mb-1">
         <input
           id={id}
@@ -33,7 +38,9 @@ const CustomInput = ({
         </div>
       )}
 
-      {touched && error ? <div className="text-danger">{error}</div> : null}
+      {!errorOnTop && touched && error ? (
+        <div className="text-danger">{error}</div>
+      ) : null}
     </>
   );
 };

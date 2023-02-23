@@ -30,6 +30,24 @@ const logout = async () => {
   return response;
 };
 
-const authService = { login, register, logout, forgotPassword, resetPassword };
+const deleteUser = async (userId) => {
+  const response = await privateRequest.delete(`/user/${userId}`);
+  return response;
+};
+
+const handleRefreshToken = async (token) => {
+  const response = await privateRequest.post(`/auth/refresh`, { token });
+  return response;
+};
+
+const authService = {
+  login,
+  logout,
+  register,
+  deleteUser,
+  resetPassword,
+  forgotPassword,
+  handleRefreshToken,
+};
 
 export default authService;

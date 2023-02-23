@@ -21,11 +21,11 @@ const Navbar = () => {
     await dispatch(logout());
   };
 
-  useEffect(() => {
-    if (currentUserStatus === "loggedOut") {
-      return navigate("/login");
-    }
-  }, [currentUserStatus]);
+  // useEffect(() => {
+  //   if (currentUserStatus === "loggedOut") {
+  //     return navigate("/login");
+  //   }
+  // }, [currentUserStatus]);
 
   const { isLoggedIn, isUser } = useAuth();
 

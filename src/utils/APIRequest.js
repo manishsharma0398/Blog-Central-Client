@@ -14,6 +14,7 @@ export const privateRequest = axios.create({
 
 privateRequest.interceptors.request.use(function (config) {
   const token = store?.getState()?.auth?.currentUser?.token;
+  console.log({ token });
   config.headers.Authorization = `Bearer ${token}`;
   config.headers.Accept = "application/json";
   return config;

@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 
 import { forgotPassword } from "../../features/auth/authSlice";
 
-import Input from "../../components/Input";
+import CustomInput from "../../components/common-components/CustomInput";
 
 const ForgotPassword = () => {
   const [emailSent, setEmailSent] = useState("");
@@ -48,20 +48,18 @@ const ForgotPassword = () => {
         Reset Your Blog Central Account Password
       </p>
 
-      {formik.touched.email && formik.errors.email && (
-        <div className="error">{formik.errors.email}</div>
-      )}
-
       {emailSent && <div className="text-success">{emailSent}</div>}
 
-      <Input
+      <CustomInput
         id="email"
         label="Email address"
         type="email"
-        placeholder="abc@xyz.com"
         helpText="An email will be sent to this email address"
         value={formik.values.email}
         onChange={formik.handleChange("email")}
+        error={formik.errors.email}
+        touched={formik.touched.email}
+        errorOnTop={true}
       />
 
       <button

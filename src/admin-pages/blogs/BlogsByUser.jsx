@@ -9,11 +9,10 @@ import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 
 import {
-  getBlogsByUserId,
-  selectBlogsStatus,
+  getAllBlogs,
   selectBlogsData,
   selectBlogsError,
-  getAllBlogs,
+  selectBlogsStatus,
 } from "../../features/blog/blogSlice";
 
 import CustomInput from "../../components/common-components/CustomInput";

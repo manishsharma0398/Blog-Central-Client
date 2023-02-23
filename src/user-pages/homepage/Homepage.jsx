@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import { Empty } from "antd";
 import Search from "antd/es/input/Search";
 
 import {
@@ -82,16 +83,11 @@ const Index = () => {
             <ResultPage
               status="500"
               title="Sorry, something went wrong."
-              btnText="Back Home"
-              goToLink="/user"
+              btnText="Reload Page"
+              goToLink="/"
             />
           ) : allBlogs && allBlogs.length < 1 ? (
-            <ResultPage
-              status="warning"
-              title="No blogs"
-              btnText="Write new blog"
-              goToLink="/user/write"
-            />
+            <Empty className="mt-5" description="No blogs" />
           ) : (
             <div className="blog-posts">
               {allBlogs &&
