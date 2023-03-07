@@ -36,8 +36,10 @@ const Index = () => {
   // }, [userStatus]);
 
   const onChange = (pageNumber) => {
-    setCurrentPage((_) => pageNumber);
-    dispatch(getAllBlogs({ page: currentPage }));
+    if (pageNumber != currentPage) {
+      setCurrentPage(pageNumber);
+      dispatch(getAllBlogs({ page: currentPage }));
+    }
   };
 
   const debounceAPICall = (func) => {

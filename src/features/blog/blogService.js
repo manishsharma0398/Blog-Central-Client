@@ -16,6 +16,7 @@ const getUserBlogsByUserId = async (userId) => {
 };
 
 const getAllBlogs = async (filterData) => {
+  console.log(filterData);
   const { userId, page, sort, sortOrder, categories, search, email, limit } =
     filterData;
   const response = await privateRequest.get(

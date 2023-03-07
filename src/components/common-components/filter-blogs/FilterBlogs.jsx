@@ -1,8 +1,6 @@
-import * as yup from "yup";
-import { useCallback, useEffect } from "react";
-import { useFormik } from "formik";
 import { Checkbox, Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   getAllCategories,
@@ -15,9 +13,11 @@ import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
 import "./filterBlogs.scss";
 
 const FilterBlogs = () => {
-  useEffect(() => {
-    dispatch(getAllCategories());
-  }, []);
+  const firstRender = useRef(true);
+
+  const [checkedCategories, setCheckedCategories] = useState([]);
+  const [sortBy, setSortBy] = useState("views");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const dispatch = useDispatch();
   const categories = useSelector(selectCategoriesData);
@@ -38,29 +38,8 @@ const FilterBlogs = () => {
     },
   ];
 
-  const schema = yup.object().shape({
-    categories: yup.array().of(yup.string()),
-    sortOrder: yup.string(),
-    sort: yup.string(),
-  });
-
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      categories: [],
-      sort: "views",
-      sortOrder: "asc",
-    },
-    validationSchema: schema,
-    onSubmit: async (values) => {},
-  });
-
   const onSortOrderHandler = () => {
-    if (formik.values.sortOrder === "asc") {
-      formik.setFieldValue("sortOrder", "desc");
-    } else {
-      formik.setFieldValue("sortOrder", "asc");
-    }
+    setSortOrder((prevState) => (prevState === "asc" ? "desc" : "asc"));
   };
 
   const debounceAPICall = (func) => {
@@ -77,30 +56,45 @@ const FilterBlogs = () => {
   };
 
   const onChangeSearch = () => {
-    dispatch(getAllBlogs({ ...formik.values }));
+    console.log(checkedCategories);
+    dispatch(
+      getAllBlogs({ sort: sortBy, sortOrder, categories: checkedCategories })
+    );
   };
 
-  const optimisedSearch = debounceAPICall(onChangeSearch);
+  const optimisedSearch = useCallback(debounceAPICall(onChangeSearch), []);
 
   useEffect(() => {
-    // dispatch(getAllBlogs({ ...formik.values }));
-    optimisedSearch();
-  }, [formik.values.categories, formik.values.sort, formik.values.sortOrder]);
+    if (!firstRender.current) {
+      console.log("call if any data chang");
+      optimisedSearch();
+    } else {
+      console.log("I will get aclled only at start");
+      dispatch(getAllCategories());
+
+      dispatch(getAllBlogs({ categories: [] }));
+      firstRender.current = false;
+    }
+  }, [checkedCategories, sortBy, sortOrder, optimisedSearch]);
+
+  const handleCheckedCategories = (cats) => {
+    setCheckedCategories(() => [...[], cats]);
+  };
 
   return (
-    <form onSubmit={formik.handleSubmit} className="filter-blogs">
+    <div className="filter-blogs">
       <div className="filter">
         <div className="filter-blogs-sort">
           <p>Sort By:</p>
           <div className="filter-blogs-sort-actions">
             <Select
               className="sort-dropdown"
-              value={formik.values.sort}
-              defaultValue="views"
+              value={sortBy}
+              defaultValue={sortBy}
               style={{
                 width: 120,
               }}
-              onChange={formik.handleChange("sort")}
+              onChange={(val) => setSortBy(val)}
               options={sort}
             />
 
@@ -109,8 +103,8 @@ const FilterBlogs = () => {
               onClick={onSortOrderHandler}
               className="sort-order"
             >
-              {formik.values.sortOrder === "asc" && "Ascending"}
-              {formik.values.sortOrder === "desc" && "Descending"}
+              {sortOrder === "asc" && "Ascending"}
+              {sortOrder === "desc" && "Descending"}
             </button>
           </div>
         </div>
@@ -120,12 +114,31 @@ const FilterBlogs = () => {
             <p>Filter By Categories:</p>
             <Checkbox.Group
               className="filter-blogs-categories-list"
-              onChange={(categories) => {
-                formik.setFieldValue("categories", categories);
-              }}
+              // onChange={(cats) => setCheckedCategories((prev) => cats)}
+              // onChange={handleCheckedCategories}
             >
               {categories?.map((cat) => (
-                <Checkbox key={cat._id} value={cat._id}>
+                <Checkbox
+                  onChange={(e) =>
+                    setCheckedCategories((prevCheckedCats) => {
+                      const iAmChecked = prevCheckedCats.includes(
+                        e.target.value
+                      );
+
+                      console.log(iAmChecked);
+
+                      if (!iAmChecked) {
+                        return [...prevCheckedCats, e.target.value];
+                      } else {
+                        return prevCheckedCats.filter(
+                          (cat) => cat !== e.target.value
+                        );
+                      }
+                    })
+                  }
+                  key={cat._id}
+                  value={cat._id}
+                >
                   {capitalizeFirstLetter(cat.category)}
                 </Checkbox>
               ))}
@@ -133,7 +146,8 @@ const FilterBlogs = () => {
           </div>
         )}
       </div>
-    </form>
+    </div>
   );
 };
+
 export default FilterBlogs;
