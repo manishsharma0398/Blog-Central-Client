@@ -1,8 +1,6 @@
 import Modal from "antd/es/modal/Modal";
 
-const CustomModal = (props) => {
-  const { open, hideModal, action, title } = props;
-
+const CustomModal = ({ open, hideModal, action, title, text }) => {
   return (
     <Modal
       title={title || "Delete Blog"}
@@ -12,7 +10,7 @@ const CustomModal = (props) => {
       okText="Yes"
       cancelText="No"
     >
-      <p>{title}</p>
+      <p>{text || title}</p>
     </Modal>
   );
 };

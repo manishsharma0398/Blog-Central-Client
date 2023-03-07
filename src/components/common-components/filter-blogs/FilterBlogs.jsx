@@ -124,7 +124,7 @@ const FilterBlogs = () => {
                 formik.setFieldValue("categories", categories);
               }}
             >
-              {categories.map((cat) => (
+              {categories?.map((cat) => (
                 <Checkbox key={cat._id} value={cat._id}>
                   {capitalizeFirstLetter(cat.category)}
                 </Checkbox>

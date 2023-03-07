@@ -3,6 +3,16 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import authService from "./authService";
 import { deleteProfilePicture, updateProfilePicture } from "../user/userSlice";
 
+const deleteUserDataFromLocalStorage = () => {
+  const mode =
+    import.meta.env.MODE === "production"
+      ? "blog_central"
+      : "blog_central_test";
+
+  localStorage.setItem(mode, "");
+  localStorage.removeItem(mode);
+};
+
 const userExist = localStorage.getItem(
   import.meta.env.MODE === "production" ? "blog_central" : "blog_central_test"
 )
@@ -74,7 +84,7 @@ export const resetPassword = createAsyncThunk(
 );
 
 export const deleteUser = createAsyncThunk(
-  "auth/reset-password",
+  "auth/delete-user",
   async (userId, thunkAPI) => {
     try {
       const response = await authService.deleteUser(userId);
@@ -192,6 +202,7 @@ export const authSlice = createSlice({
       .addCase(logout.fulfilled, (state, action) => {
         state.status = "loggedOut";
         state.error = null;
+        deleteUserDataFromLocalStorage();
         state.currentUser = {
           user: { profilePic: {} },
         };
@@ -217,6 +228,7 @@ export const authSlice = createSlice({
       })
       .addCase(updateProfilePicture.fulfilled, (state, action) => {
         state.currentUser.user.profilePic = action.payload.profilePic;
+        deleteUserDataFromLocalStorage();
       })
       .addCase(deleteProfilePicture.fulfilled, (state, action) => {
         state.currentUser.user.profilePic = action.payload.profilePic;
