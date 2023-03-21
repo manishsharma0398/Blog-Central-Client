@@ -1,6 +1,6 @@
 import { Checkbox, Select } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   getAllCategories,
@@ -9,6 +9,7 @@ import {
 } from "../../../features/categories/categoriesSlice";
 import { getAllBlogs } from "../../../features/blog/blogSlice";
 import { capitalizeFirstLetter } from "../../../utils/capitalizeFirstLetter";
+import { debounce } from "../../../utils/debounce";
 
 import "./filterBlogs.scss";
 
@@ -42,44 +43,25 @@ const FilterBlogs = () => {
     setSortOrder((prevState) => (prevState === "asc" ? "desc" : "asc"));
   };
 
-  const debounceAPICall = (func) => {
-    let timer;
+  const filterDebounceHandler = (cb, delay) => debounce(cb, delay);
 
-    return function (...args) {
-      const context = this;
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        timer = null;
-        func.apply(context, args);
-      }, 1000);
-    };
-  };
-
-  const onChangeSearch = () => {
-    console.log(checkedCategories);
-    dispatch(
-      getAllBlogs({ sort: sortBy, sortOrder, categories: checkedCategories })
-    );
-  };
-
-  const optimisedSearch = useCallback(debounceAPICall(onChangeSearch), []);
+  const optimisedSearch = filterDebounceHandler(
+    () =>
+      dispatch(
+        getAllBlogs({ sort: sortBy, sortOrder, categories: checkedCategories })
+      ),
+    500
+  );
 
   useEffect(() => {
     if (!firstRender.current) {
-      console.log("call if any data chang");
       optimisedSearch();
     } else {
-      console.log("I will get aclled only at start");
       dispatch(getAllCategories());
-
       dispatch(getAllBlogs({ categories: [] }));
       firstRender.current = false;
     }
-  }, [checkedCategories, sortBy, sortOrder, optimisedSearch]);
-
-  const handleCheckedCategories = (cats) => {
-    setCheckedCategories(() => [...[], cats]);
-  };
+  }, [checkedCategories, sortBy, sortOrder]);
 
   return (
     <div className="filter-blogs">
@@ -112,11 +94,7 @@ const FilterBlogs = () => {
         {categoriesStatus === "success" && (
           <div className="filter-blogs-categories">
             <p>Filter By Categories:</p>
-            <Checkbox.Group
-              className="filter-blogs-categories-list"
-              // onChange={(cats) => setCheckedCategories((prev) => cats)}
-              // onChange={handleCheckedCategories}
-            >
+            <Checkbox.Group className="filter-blogs-categories-list">
               {categories?.map((cat) => (
                 <Checkbox
                   onChange={(e) =>
@@ -124,8 +102,6 @@ const FilterBlogs = () => {
                       const iAmChecked = prevCheckedCats.includes(
                         e.target.value
                       );
-
-                      console.log(iAmChecked);
 
                       if (!iAmChecked) {
                         return [...prevCheckedCats, e.target.value];

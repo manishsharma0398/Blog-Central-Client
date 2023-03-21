@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { Empty } from "antd";
 import Search from "antd/es/input/Search";
+
+import { debounce } from "../../utils/debounce";
 
 import {
   getAllBlogs,
@@ -11,7 +13,6 @@ import {
   selectBlogsStatus,
   selectBlogsMetaData,
 } from "../../features/blog/blogSlice";
-import { selectUserStatus } from "../../features/auth/authSlice";
 
 import Blog from "../../components/user-components/blog/Blog";
 import ResultPage from "../../components/common-components/ResultPage";
@@ -25,15 +26,10 @@ const Index = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const allBlogs = useSelector(selectBlogsData);
-  const userStatus = useSelector(selectUserStatus);
   const blogStatus = useSelector(selectBlogsStatus);
   const blogMetaData = useSelector(selectBlogsMetaData);
 
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   dispatch(getAllBlogs({ page: currentPage }));
-  // }, [userStatus]);
 
   const onChange = (pageNumber) => {
     if (pageNumber != currentPage) {
@@ -42,24 +38,11 @@ const Index = () => {
     }
   };
 
-  const debounceAPICall = (func) => {
-    let timer;
+  const searchDebounceHandler = (func, timer) => debounce(func, timer);
 
-    return function (...args) {
-      const context = this;
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        timer = null;
-        func.apply(context, args);
-      }, 1000);
-    };
-  };
-
-  const onChangeSearch = (e) => {
-    dispatch(getAllBlogs({ search: e.target.value }));
-  };
-
-  const optimisedSearch = useCallback(debounceAPICall(onChangeSearch), []);
+  const searchBlogs = searchDebounceHandler((searchTerm) => {
+    dispatch(getAllBlogs({ search: searchTerm }));
+  }, 500);
 
   return (
     <div className="index">
@@ -72,7 +55,7 @@ const Index = () => {
           className="search-input"
           placeholder="Search Blog"
           allowClear
-          onChange={optimisedSearch}
+          onChange={(e) => searchBlogs(e.target.value)}
         />
       </div>
 
